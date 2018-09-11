@@ -1,0 +1,8 @@
+@import './base.scss';
+
+.index {
+  background: var(--primary-bg);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
