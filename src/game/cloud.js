@@ -9,7 +9,7 @@ export default ex.Actor.extend({
     ex.Actor.apply(this, [x, y]);
     this.width = 500;
     this.height = 500;
-    this.dy = ex.Util.randomInRange(-30, -100);
+    this.vel.y = ex.Util.randomInRange(-30, -100);
     const cloud = Resources.Cloud.asSprite();
     cloud.scale = new ex.Vector(3 * SCALE.x, 3 * SCALE.y);
     this.addDrawing('default', cloud);
