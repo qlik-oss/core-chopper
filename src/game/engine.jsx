@@ -35,10 +35,10 @@ class Engine extends React.Component {
       const scale = (engine.drawHeight / 800) * 0.50 + 1;
       Object.assign(Settings.scale, { x: scale, y: scale });
       const biker = new Biker(engine);
-      // engine.add(new Cloud(800, 0));
+      engine.add(new Cloud(800, 0));
       engine.add(biker);
       engine.add(new Cloud(400, 300 * Settings.scale.y));
-      // engine.add(new Cloud(700, 700 * Settings.scale.y));
+      engine.add(new Cloud(700, 700 * Settings.scale.y));
       for (let i = 0; i < engine.drawWidth; i += 61 * Settings.scale.y) {
         engine.add(new Floor(i, 400));
       }

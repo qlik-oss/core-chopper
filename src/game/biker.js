@@ -13,10 +13,10 @@ export default ex.Actor.extend({
     this.vel = new ex.Vector(0, 0);
     this.anchor = new ex.Vector(0.5, 0.6);
     this.hasBounced = false;
-    /* this.scale.setTo(
-      Settings.scale.x * Settings.BIKER_WIDTH,
-      Settings.scale.y * Settings.BIKER_HEIGHT,
-    ); */
+    this.scale.setTo(
+      Settings.scale.x * Settings.BIKER_SCALE,
+      Settings.scale.y * Settings.BIKER_SCALE,
+    );
     this.collisionType = ex.CollisionType.Passive;
 
     const spriteSheet = new ex.SpriteSheet(Resources.BikerSpriteSheet, 4, 1, 96, 32);
@@ -42,6 +42,7 @@ export default ex.Actor.extend({
       engine.currentScene.camera.shake(10, 10, 500);
       this.vel.y = 0;
       this.y += 20;
+      this.kill();
       console.log('DEAD');
     });
   },
