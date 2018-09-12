@@ -1,6 +1,6 @@
 import * as ex from 'excalibur';
 
-import bss from './sprites/helicopter.png';
+import bss from './sprites/helicopter-green.png';
 import bss2 from './sprites/brickspritesheet.png';
 import biker from './sprites/excalibird.png';
 import cloud from './sprites/cloud.png';
