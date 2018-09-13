@@ -10,12 +10,13 @@ export default ex.Actor.extend({
     ex.Actor.apply(this, [centerX, -centerY * Settings.scale.y, Settings.CHOPPER_WIDTH, Settings.CHOPPER_HEIGHT]);
     this.vel = new ex.Vector(0, 0);
     this.anchor = new ex.Vector(0.5, 0.6);
-    this.hasBounced = false;
     this.scale.setTo(
       Settings.scale.x * Settings.CHOPPER_SCALE,
       Settings.scale.y * Settings.CHOPPER_SCALE,
     );
     this.collisionType = ex.CollisionType.Passive;
+    this.hasBounced = false;
+    this.powerModifier = 1;
 
     const spriteSheet = new ex.SpriteSheet(Resources.Chopper, 4, 1, 96, 32);
     this.upAnimation = spriteSheet.getAnimationByIndices(engine, [2, 1, 0], 120);
@@ -49,6 +50,7 @@ export default ex.Actor.extend({
     if (this.dead || !this.hasBounced) {
       return;
     }
+    this.powerModifier = this.y / 50;
     if (this.vel.y > 0) {
       this.setDrawing('down');
     }
@@ -65,7 +67,7 @@ export default ex.Actor.extend({
     this.upAnimation.reset();
     this.hasBounced = true;
     this.setDrawing('up');
-    this.vel.y = ex.Util.clamp(this.vel.y + (Settings.CHOPPER_IMPULSE / 5), -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
+    this.vel.y = ex.Util.clamp(this.vel.y + (Settings.CHOPPER_IMPULSE - this.powerModifier), -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
     // Resource.FlapSound.play();
     const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
     this.animatingUpwards = true;
