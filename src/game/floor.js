@@ -13,7 +13,7 @@ export default ex.Actor.extend({
     ex.Actor.apply(this, [x, y, 61, 40]);
     this.scale.setTo(SCALE.x, SCALE.y);
     this.collisionType = ex.CollisionType.Fixed;
-    this.anchor = new ex.Vector(0, 0);
+    // this.anchor = new ex.Vector(0, 400);
     this.addDrawing('default', floor);
   },
 });
