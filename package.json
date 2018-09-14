@@ -12,11 +12,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aai-ant-plus": "0.1.9",
     "excalibur": "^0.18.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.1",
-    "react-outside-click-handler": "1.2.0"
+    "react-outside-click-handler": "1.2.0",
+    "ws": "6.0.0"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.6",
