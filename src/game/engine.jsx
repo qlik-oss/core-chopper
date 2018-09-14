@@ -16,6 +16,8 @@ class Engine extends React.Component {
   constructor(props) {
     super(props);
     this.state = { canvasId: `game${id += 1}` };
+    this.antSocket = new WebSocket('ws://localhost:8080');
+    this.antSocket.onmessage = (...args) => this.handleAntData(...args);
   }
 
   init() {
@@ -36,6 +38,7 @@ class Engine extends React.Component {
       const scale = (engine.drawHeight / 800) * 0.50 + 1;
       Object.assign(Settings.scale, { x: scale, y: scale });
       const chopper = new Chopper(engine);
+      this.chopper = chopper;
       engine.add(chopper);
       engine.add(new Cloud(800, 0));
       engine.add(new Cloud(400, 300 * Settings.scale.y));
@@ -51,6 +54,16 @@ class Engine extends React.Component {
       });
       engine.currentScene.camera.strategy.lockToActor(chopper);
     });
+  }
+
+  handleAntData(evt) {
+    const result = JSON.parse(evt.data);
+    // console.log(data);
+    if (result.type === 'ant-speed') {
+      if (this.chopper) {
+        this.chopper.bounce(result.data.CalculatedSpeed);
+      }
+    }
   }
 
   render() {

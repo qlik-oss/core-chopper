@@ -62,12 +62,13 @@ export default ex.Actor.extend({
     this.vel.y = ex.Util.clamp(this.vel.y, -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
   },
 
-  bounce() {
+  bounce(speed) {
+    const adjustedSpeed = -speed * 100;
     this.actions.clearActions();
     this.upAnimation.reset();
     this.hasBounced = true;
     this.setDrawing('up');
-    this.vel.y = ex.Util.clamp(this.vel.y + (Settings.CHOPPER_IMPULSE - this.powerModifier), -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
+    this.vel.y = ex.Util.clamp(this.vel.y + (adjustedSpeed - this.powerModifier), -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
     // Resource.FlapSound.play();
     const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
     this.animatingUpwards = true;
