@@ -51,20 +51,23 @@ export default ex.Actor.extend({
       return;
     }
     this.powerModifier = this.y / 50;
-    if (this.vel.y > 0) {
-      this.setDrawing('down');
-    }
     if (!this.animatingUpwards) {
       this.vel.y = ex.Util.clamp(this.vel.y + (Settings.ACCELERATION / 60), -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
       const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
       this.rotation = velocityAngle;
     }
     this.vel.y = ex.Util.clamp(this.vel.y, -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
+    if (this.vel.y > 0) {
+      this.setDrawing('down');
+    }
   },
 
   bounce(speed) {
-    const adjustedSpeed = -speed * 100;
-    this.actions.clearActions();
+    if (!speed) {
+      // skip 0 speed to avoid "jumpy" acceleration:
+      return;
+    }
+    const adjustedSpeed = -speed * 50;
     this.upAnimation.reset();
     this.hasBounced = true;
     this.setDrawing('up');
@@ -72,8 +75,8 @@ export default ex.Actor.extend({
     // Resource.FlapSound.play();
     const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
     this.animatingUpwards = true;
-    this.actions.rotateBy(velocityAngle, 200).callMethod(() => {
-      this.animatingUpwards = false;
-    });
+    // this.actions.clearActions();
+    // this.rotation = velocityAngle;
+    this.actions.rotateBy(velocityAngle, 1000).callMethod(() => this.animatingUpwards = false);
   },
 });

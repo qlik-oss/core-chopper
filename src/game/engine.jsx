@@ -16,11 +16,18 @@ class Engine extends React.Component {
   constructor(props) {
     super(props);
     this.state = { canvasId: `game${id += 1}` };
-    /*
-    figure out how to do this properly with socket:
-    if (this.chopper) {
+    props.registerListener(result => this.onData(result));
+    this.lastRevCount = 0;
+  }
+
+  onData(result) {
+    if (result.type === 'ant-speed' && this.chopper) {
+      if (this.lastRevCount === result.data.CumulativeSpeedRevolutionCount) {
+        return;
+      }
+      this.lastRevCount = result.data.CumulativeSpeedRevolutionCount;
       this.chopper.bounce(result.data.CalculatedSpeed);
-    } */
+    }
   }
 
   init() {

@@ -17,17 +17,26 @@ class Index extends React.Component {
     this.state = {
       user: { id: null, name: '' },
     };
+    this.listeners = [];
     this.socket = new WebSocket('ws://localhost:8080');
     this.socket.onmessage = (...args) => this.socketData(...args);
+  }
+
+  registerListener(fn) {
+    this.listeners.push(fn);
+  }
+
+  removeListener(fn) {
+    const idx = this.listeners.indexOf(fn);
+    this.listeners.splice(idx, 1);
   }
 
   socketData(evt) {
     const result = JSON.parse(evt.data);
     // console.log(data);
+    this.listeners.forEach(l => l(result));
     if (result.type === 'scan') {
       this.setState({ user: result.data });
-    } else if (result.type === 'ant-speed') {
-      // how to stream this data to <Engine>?
     }
   }
 
@@ -38,9 +47,9 @@ class Index extends React.Component {
   render() {
     const { user } = this.state;
     if (!user.id || !user.name) {
-      return <Scan user={user} onDone={user => this.done(user)} />;
+      return <Scan user={user} onDone={u => this.done(u)} />;
     }
-    return <Engine user={user} />;
+    return <Engine user={user} registerListener={fn => this.registerListener(fn)} />;
   }
 }
 
