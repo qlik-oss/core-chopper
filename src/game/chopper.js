@@ -55,11 +55,11 @@ export default ex.Actor.extend({
       this.setDrawing('down');
     }
     if (!this.animatingUpwards) {
-      this.vel.y = ex.Util.clamp(this.vel.y + (Settings.ACCELERATION / 60), -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
+      this.vel.y = ex.Util.clamp(this.vel.y + (Settings.ACCELERATION / 60), -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
       const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
       this.rotation = velocityAngle;
     }
-    this.vel.y = ex.Util.clamp(this.vel.y, -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
+    this.vel.y = ex.Util.clamp(this.vel.y, -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
   },
 
   bounce(speed) {
@@ -68,11 +68,11 @@ export default ex.Actor.extend({
     this.upAnimation.reset();
     this.hasBounced = true;
     this.setDrawing('up');
-    this.vel.y = ex.Util.clamp(this.vel.y + (adjustedSpeed - this.powerModifier), -Settings.MAX_VELOCITY, Settings.MAX_VELOCITY);
+    this.vel.y = ex.Util.clamp(this.vel.y + (adjustedSpeed - this.powerModifier), -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
     // Resource.FlapSound.play();
     const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
     this.animatingUpwards = true;
-    this.actions.rotateBy(velocityAngle, 100).callMethod(() => {
+    this.actions.rotateBy(velocityAngle, 200).callMethod(() => {
       this.animatingUpwards = false;
     });
   },

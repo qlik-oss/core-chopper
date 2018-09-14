@@ -16,8 +16,11 @@ class Engine extends React.Component {
   constructor(props) {
     super(props);
     this.state = { canvasId: `game${id += 1}` };
-    this.antSocket = new WebSocket('ws://localhost:8080');
-    this.antSocket.onmessage = (...args) => this.handleAntData(...args);
+    /*
+    figure out how to do this properly with socket:
+    if (this.chopper) {
+      this.chopper.bounce(result.data.CalculatedSpeed);
+    } */
   }
 
   init() {
@@ -50,20 +53,10 @@ class Engine extends React.Component {
       // hook up to ant+ data and trigger bounce method based on values:
       // setInterval(() => chopper.bounce(), 2000);
       engine.input.pointers.primary.on('down', () => {
-        chopper.bounce();
+        chopper.bounce(5);
       });
       engine.currentScene.camera.strategy.lockToActor(chopper);
     });
-  }
-
-  handleAntData(evt) {
-    const result = JSON.parse(evt.data);
-    // console.log(data);
-    if (result.type === 'ant-speed') {
-      if (this.chopper) {
-        this.chopper.bounce(result.data.CalculatedSpeed);
-      }
-    }
   }
 
   render() {
