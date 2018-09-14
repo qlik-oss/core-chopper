@@ -1,0 +1,10 @@
+version: "3.3"
+
+services:
+  qix-engine:
+    image: qlikcore/engine:12.225.0
+    restart: always
+    command: |
+      - -S AcceptEULA=${ACCEPT_EULA} 
+    ports:
+      - "9076:9076"
