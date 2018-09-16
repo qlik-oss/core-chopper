@@ -1,7 +1,6 @@
 import * as ex from 'excalibur';
 
 import Settings from './settings';
-import Resources from './resources';
 
 export default ex.UIActor.extend({
   constructor(engine, chopper) {
@@ -10,19 +9,23 @@ export default ex.UIActor.extend({
     this.maxScore = 0;
     this.powerLabel = new ex.Label({
       baseAlign: ex.BaseAlign.Top,
-      fontSize: 18,
+      fontFamily: 'VT323',
+      fontSize: 34,
+      pos: new ex.Vector(20, 20),
       color: ex.Color.White,
     });
     this.scoreLabel = new ex.Label({
       baseAlign: ex.BaseAlign.Top,
-      fontSize: 18,
-      pos: new ex.Vector(0, engine.drawHeight - 24),
+      fontFamily: 'VT323',
+      fontSize: 34,
+      pos: new ex.Vector(20, engine.drawHeight - 44),
       color: ex.Color.White,
     });
     this.heightLabel = new ex.Label({
+      fontFamily: 'VT323',
+      fontSize: 60,
       textAlign: ex.TextAlign.Center,
       baseAlign: ex.BaseAlign.Top,
-      fontSize: 60,
       pos: new ex.Vector(engine.drawWidth / 2, engine.drawHeight / 2 - 50),
       color: ex.Color.White,
     });

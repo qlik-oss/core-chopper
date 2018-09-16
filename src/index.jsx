@@ -1,10 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import Header from './header';
 import Scan from './scan';
-import Engine from './game/engine';
+import HighScore from './high-score';
+import Engine from './engine';
 
-import './index.scss';
+import './index.css';
 
 // expose React globally, we need this to avoid
 // it being removed by the experimental treeshaking
@@ -36,27 +38,41 @@ class Index extends React.Component {
     // console.log(data);
     this.listeners.forEach(l => l(result));
     if (result.type === 'nfc') {
-      this.setState({ user: { id: result.data.id, name: 'none' }});
+      this.setState({ user: result.data });
     }
   }
 
-done(user) {
-  this.setState({ user });
-}
-
-render() {
-  const { user } = this.state;
-  if (!user.id || !user.name) {
-    return <Scan user={user} onDone={u => this.done(u)} />;
+  done(user) {
+    this.setState({ user });
   }
-  return <Engine user={user} registerListener={fn => this.registerListener(fn)} />;
-}
+
+  render() {
+    const { user } = this.state;
+    let view;
+    if (!user.id || !user.name) {
+      view = (
+        <div className="start">
+          <Scan user={user} onDone={u => this.done(u)} />
+          <HighScore />
+        </div>
+      );
+    } else {
+      view = <Engine user={user} registerListener={fn => this.registerListener(fn)} />;
+    }
+    // todo: fix this.setState({ user: { id: null, name: null } })
+    // need to tear down the game engine instance somehow
+    /* eslint no-restricted-globals:0 */
+    return (
+      <div className="index">
+        <Header onClose={() => location.reload()} />
+        {view}
+      </div>
+    );
+  }
 }
 
 ReactDOM.render(
-  <div className="index">
-    <Index />
-  </div>,
+  <Index />,
   document.getElementById('app'),
 );
 

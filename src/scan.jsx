@@ -1,11 +1,12 @@
 import React from 'react';
 
-import './scan.scss';
+import badge from './images/id-badge.svg';
+import './scan.css';
 
 export default class Scan extends React.Component {
   constructor(props) {
     super();
-    this.state = { user: props.user };
+    this.state = { user: props.user, useScanner: true };
     this.done = props.onDone;
   }
 
@@ -22,30 +23,35 @@ export default class Scan extends React.Component {
   }
 
   render() {
-    const { user } = this.state;
-    if (!user.id) {
-      return (
-        <div className="scan">
-          <div className="badge">
-            <p>Please scan your ID badge to begin</p>
-          </div>
-          <p>
-Manual input:
-            {' '}
-            <input onKeyUp={evt => this.manualInput(evt)} />
-          </p>
+    const { user, useScanner } = this.state;
+    const manual = (
+      <p>
+Write your name:
+        {' '}
+        <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
+      </p>
+    );
+    const scanner = (
+      <div className="scan">
+        <div className="badge" onClick={() => this.setState({ useScanner: !useScanner })}>
+          <img alt="ID badge icon" src={badge} />
+          <p>Scan your ID badge to begin</p>
         </div>
-      );
+      </div>
+    );
+    if (!user.id) {
+      return useScanner ? scanner : manual;
     } if (!user.name) {
       return (
         <div className="name">
           <p>
 Looks like this is your first time riding the chopper!
-Let's get you sorted, please fill in your name:
+Please fill in your name:
           </p>
           <input onChange={evt => this.updateName(evt)} />
         </div>
       );
     }
+    return (<p>None</p>);
   }
 }

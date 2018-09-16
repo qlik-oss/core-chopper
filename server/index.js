@@ -9,25 +9,25 @@ const { speedSensor, cadenceSensor, powerSensor } = require('./ant');
 const REST_PORT = 8081;
 const WSS_PORT = 8080;
 
-nfc.on('reader', reader => {
-  console.log("NFC reader attched");
-  reader.on('card', card => {
-    //TODO Add logic to query lowdb and search for existing user
+nfc.on('reader', (reader) => {
+  console.log('NFC reader attched');
+  reader.on('card', (card) => {
+    // TODO Add logic to query lowdb and search for existing user
     console.log(card.uid);
     sockets.forEach(s => s.send(JSON.stringify({
       type: 'nfc',
       data: {
         id: card.uid,
-        name: "",
+        name: '',
       },
     })));
   });
-  reader.on('error', err => {
+  reader.on('error', (err) => {
     console.error('error reading card ', err);
   });
 });
 
-nfc.on('error', err => {
+nfc.on('error', (err) => {
   console.error('NFC card reader error ', err);
 });
 

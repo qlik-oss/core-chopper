@@ -1,14 +1,14 @@
 import React from 'react';
 import * as ex from 'excalibur';
 
-import Chopper from './chopper';
-import Cloud from './cloud';
-import Floor from './floor';
-import Resources from './resources';
-import Settings from './settings';
-import HUD from './hud';
+import Chopper from './game/chopper';
+import Cloud from './game/cloud';
+import Floor from './game/floor';
+import Resources from './game/resources';
+import Settings from './game/settings';
+import HUD from './game/hud';
 
-import './engine.scss';
+import './engine.css';
 
 let id = 0;
 
@@ -41,7 +41,8 @@ class Engine extends React.Component {
       displayMode: ex.DisplayMode.Container,
       canvasElementId: canvasId,
       suppressConsoleBootMessage: true,
-      isDebug: true,
+      // isDebug: true,
+      backgroundColor: ex.Color.Transparent,
     });
     engine.setAntialiasing(false);
     engine.start(loader).then(() => {
@@ -71,7 +72,7 @@ class Engine extends React.Component {
     if (!this.isInitialized) {
       setTimeout(() => this.init());
     }
-    return <div className="game"><canvas id={canvasId} /></div>;
+    return <div className="engine"><canvas id={canvasId} /></div>;
   }
 }
 

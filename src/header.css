@@ -1,0 +1,32 @@
+.header {
+  display: flex;
+  align-items: center;
+  background-color: #006699;
+  box-shadow: 0 0 6px #000;
+  position: relative;
+  justify-content: space-between;
+}
+
+.header > div {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header .left {
+  width: 50%;
+}
+
+.header .left img {
+  height: 100%;
+}
+
+.header .left span {
+  color: gold;
+}
+
+.header .right span {
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}

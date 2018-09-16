@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production parcel build --experimental-scope-hoisting src/index.html",
+    "build": "cross-env NODE_ENV=production parcel build src/index.html --log-level 5",
     "start": "parcel src/index.html",
-    "lint": "eslint --ext .js,.jsx .",
-    "lint:fix": "eslint --ext .js,.jsx --fix ."
+    "lint": "eslint --ext .js,.jsx src/",
+    "lint:fix": "eslint --ext .js,.jsx --fix src/"
   },
   "author": "",
   "license": "ISC",
@@ -16,9 +16,10 @@
     "excalibur": "^0.18.0",
     "nfc-pcsc": "^0.6.2",
     "prop-types": "^15.6.2",
-    "react": "^16.4.2",
+    "react": "16.5.1",
     "react-dom": "^16.4.1",
     "react-outside-click-handler": "1.2.0",
+    "react-svg-inline": "2.1.1",
     "ws": "6.0.0"
   },
   "devDependencies": {

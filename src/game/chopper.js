@@ -7,7 +7,12 @@ export default ex.Actor.extend({
   constructor(engine) {
     const centerX = engine.drawWidth / 2;
     const centerY = engine.drawHeight / 2;
-    ex.Actor.apply(this, [centerX, -centerY * Settings.scale.y, Settings.CHOPPER_WIDTH, Settings.CHOPPER_HEIGHT]);
+    ex.Actor.apply(this, [
+      centerX,
+      -centerY * Settings.scale.y,
+      Settings.CHOPPER_WIDTH,
+      Settings.CHOPPER_HEIGHT,
+    ]);
     this.vel = new ex.Vector(0, 0);
     this.anchor = new ex.Vector(0.5, 0.6);
     this.scale.setTo(
@@ -52,7 +57,11 @@ export default ex.Actor.extend({
     }
     this.powerModifier = this.y / 50;
     if (!this.animatingUpwards) {
-      this.vel.y = ex.Util.clamp(this.vel.y + (Settings.ACCELERATION / 60), -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
+      this.vel.y = ex.Util.clamp(
+        this.vel.y + (Settings.ACCELERATION / 60),
+        -Settings.MAX_VELOCITY,
+        Settings.MAX_DOWNWARDS_VELOCITY,
+      );
       const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
       this.rotation = velocityAngle;
     }
@@ -71,12 +80,16 @@ export default ex.Actor.extend({
     this.upAnimation.reset();
     this.hasBounced = true;
     this.setDrawing('up');
-    this.vel.y = ex.Util.clamp(this.vel.y + (adjustedSpeed - this.powerModifier), -Settings.MAX_VELOCITY, Settings.MAX_DOWNWARDS_VELOCITY);
+    this.vel.y = ex.Util.clamp(
+      this.vel.y + (adjustedSpeed - this.powerModifier),
+      -Settings.MAX_VELOCITY,
+      Settings.MAX_DOWNWARDS_VELOCITY,
+    );
     // Resource.FlapSound.play();
     const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
     this.animatingUpwards = true;
     // this.actions.clearActions();
     // this.rotation = velocityAngle;
-    this.actions.rotateBy(velocityAngle, 1000).callMethod(() => this.animatingUpwards = false);
+    this.actions.rotateBy(velocityAngle, 1000).callMethod(() => { this.animatingUpwards = false; });
   },
 });

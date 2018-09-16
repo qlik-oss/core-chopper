@@ -1,0 +1,9 @@
+.high-score table th,
+.high-score table td {
+  width: 33%;
+  text-align: left;
+}
+
+.high-score table tr > :last-child {
+  text-align: right;
+}

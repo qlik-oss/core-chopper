@@ -1,0 +1,29 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: VT323, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 0 0 3px #000;
+}
+
+input {
+  font-family: VT323, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  font-size: 24px;
+}
+
+.index > :first-child {
+  height: 42px;
+}
+
+.index > :last-child {
+  height: calc(100vh - 42px);
+  overflow: hidden;
+  background: #009dec;
+}
+
+.index .start {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
