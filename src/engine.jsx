@@ -6,6 +6,8 @@ import Cloud from './game/cloud';
 import Floor from './game/floor';
 import Resources from './game/resources';
 import Settings from './game/settings';
+import CountDown from './game/count-down';
+import GameOver from './game/game-over';
 import HUD from './game/hud';
 
 import './engine.css';
@@ -51,6 +53,8 @@ class Engine extends React.Component {
       const chopper = new Chopper(engine);
       this.chopper = chopper;
       engine.add(chopper);
+      engine.add(new CountDown(engine, chopper));
+      engine.add(new GameOver(engine, chopper));
       engine.add(new Cloud(800, 0));
       engine.add(new Cloud(400, 300 * Settings.scale.y));
       engine.add(new Cloud(700, 700 * Settings.scale.y));

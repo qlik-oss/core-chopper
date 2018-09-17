@@ -22,6 +22,7 @@ export default ex.Actor.extend({
     this.collisionType = ex.CollisionType.Passive;
     this.hasBounced = false;
     this.powerModifier = 1;
+    this.locked = true;
 
     const spriteSheet = new ex.SpriteSheet(Resources.Chopper, 4, 1, 96, 32);
     this.upAnimation = spriteSheet.getAnimationByIndices(engine, [2, 1, 0], 120);
@@ -52,7 +53,7 @@ export default ex.Actor.extend({
 
   update(engine, delta) {
     ex.Actor.prototype.update.apply(this, [engine, delta]);
-    if (this.dead || !this.hasBounced) {
+    if (this.dead || !this.hasBounced || this.locked) {
       return;
     }
     const powerModifier = this.y / 50;
@@ -73,13 +74,16 @@ export default ex.Actor.extend({
   },
 
   bounce(speed) {
+    this.hasBounced = true;
+    if (this.locked) {
+      return;
+    }
     if (!speed) {
       // skip 0 speed to avoid "jumpy" acceleration:
       return;
     }
     const adjustedSpeed = -speed * 50;
     this.upAnimation.reset();
-    this.hasBounced = true;
     this.setDrawing('up');
     this.vel.y = ex.Util.clamp(
       this.vel.y + (adjustedSpeed - this.powerModifier),

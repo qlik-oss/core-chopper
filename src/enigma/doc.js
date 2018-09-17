@@ -32,7 +32,7 @@ const docMixin = {
           ],
           qInitialDataFetch: [{
             qWidth: 2,
-            qHeight: 1000,
+            qHeight: 10,
           }],
           qInterColumnSortOrder: [1, 0],
         },

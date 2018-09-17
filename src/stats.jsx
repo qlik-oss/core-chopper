@@ -9,14 +9,16 @@ export default class Stats extends React.Component {
     super();
     this.state = { stats: null };
     getDoc().then(async (doc) => {
-      const [cntUsers, avgSpeed, avgCadence] = await Promise.all([
+      const [cntUsers, cntGames, avgSpeed, avgCadence] = await Promise.all([
         doc.evaluate('COUNT(DISTINCT userid)'),
+        doc.evaluate('COUNT(DISTINCT gameid)'),
         doc.evaluate('AVG(speed)'),
         doc.evaluate('AVG(cadence)'),
       ]);
       this.setState({
         stats: {
           cntUsers,
+          cntGames,
           avgSpeed,
           avgCadence,
         },
@@ -36,7 +38,11 @@ There has been
           {' '}
           <strong>{stats.cntUsers}</strong>
           {' '}
-players in total, averaging a speed of
+players in total. They have played
+          {' '}
+          <strong>{stats.cntGames}</strong>
+          {' '}
+games, averaging a speed of
           {' '}
           <strong>{Math.round((stats.avgSpeed * 18) / 5)}</strong>
           {' '}
