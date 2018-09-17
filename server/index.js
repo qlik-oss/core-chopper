@@ -50,8 +50,21 @@ socket.on('message', (data) => {
   }
 });
 
+let latestSpeed = 0;
+let latestCadence = 0;
+let latestPower = 0;
+let latestWrite = 0;
+const writeStream = fs.createWriteStream(`${__dirname}/mock/entries.csv`, { flags: 'a' });
+
 // also stream data to csv files on disk on these events using "currentUser" and "isStarted":
 speedSensor.on('speedData', (data) => {
+  if (latestWrite === data.SpeedEventTime) {
+    return;
+  }
+  latestWrite = data.SpeedEventTime;
+  latestSpeed = data.CalculatedSpeed;
+  writeStream.write(`1,${+new Date()},${latestSpeed},${latestCadence},${latestPower}\n`);
+  // console.log('wrote data', data.CalculatedSpeed);
   const { DeviceID, CalculatedSpeed, CumulativeSpeedRevolutionCount } = data;
   sockets.forEach(s => s.send(JSON.stringify({
     type: 'ant-speed',
@@ -62,6 +75,7 @@ speedSensor.on('speedData', (data) => {
 });
 
 cadenceSensor.on('cadenceData', (data) => {
+  latestCadence = data.CalculatedCadence;
   const { DeviceID, CalculatedCadence, CumulativeCadenceRevolutionCount } = data;
   sockets.forEach(s => s.send(JSON.stringify({
     type: 'ant-cadence',
@@ -73,6 +87,7 @@ cadenceSensor.on('cadenceData', (data) => {
 
 if (powerSensor) {
   powerSensor.on('powerData', (data) => {
+    latestPower = data.Power;
     const { DeviceID, Power } = data;
     sockets.forEach(s => s.send(JSON.stringify({
       type: 'ant-power',

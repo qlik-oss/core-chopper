@@ -55,7 +55,8 @@ export default ex.Actor.extend({
     if (this.dead || !this.hasBounced) {
       return;
     }
-    this.powerModifier = this.y / 50;
+    const powerModifier = this.y / 50;
+    this.powerModifier = powerModifier;
     if (!this.animatingUpwards) {
       this.vel.y = ex.Util.clamp(
         this.vel.y + (Settings.ACCELERATION / 60),

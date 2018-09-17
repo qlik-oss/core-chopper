@@ -1,27 +1,36 @@
 import React from 'react';
 
+import getDoc from './enigma/doc';
+
 import './high-score.css';
 
 export default class HighScore extends React.Component {
   constructor(props) {
     super();
     this.props = props;
+    this.state = { scores: null };
+    getDoc().then(doc => doc.getHighScore()).then((layout) => {
+      this.setState({
+        scores: layout.qHyperCube.qDataPages[0].qMatrix,
+      });
+    });
   }
 
   render() {
-    const rows = [
-      { user: { id: 1, name: 'Andrée Hansson' }, score: 3928 },
-      { user: { id: 1, name: 'Andrée Hansson' }, score: 19284 },
-      { user: { id: 1, name: 'Andrée Hansson' }, score: 9382 },
-      { user: { id: 1, name: 'Henrik Carlioth' }, score: 5739 },
-      { user: { id: 1, name: 'Henrik Carlioth' }, score: 28914 },
-    ]
-      .sort((a, b) => b.score - a.score)
+    const { scores } = this.state;
+    if (!scores) {
+      return (<p>Loading...</p>);
+    }
+    if (!scores.length) {
+      return (<p>No highscores yet!</p>);
+    }
+    const rows = scores
+      .sort((a, b) => b[1].qNum - a[1].qNum)
       .map((r, i) => (
-        <tr key={r.user.id + r.score}>
+        <tr key={r[0].qText + r[1].qNum}>
           <td>{i + 1}</td>
-          <td>{r.user.name}</td>
-          <td>{r.score}</td>
+          <td>{r[0].qText}</td>
+          <td>{r[1].qNum}</td>
         </tr>
       ));
     return (

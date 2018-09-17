@@ -5,6 +5,6 @@ services:
     image: qlikcore/engine:12.225.0
     restart: always
     command: |
-      - -S AcceptEULA=${ACCEPT_EULA} 
+      - -S AcceptEULA=${ACCEPT_EULA}
     ports:
       - "9076:9076"
