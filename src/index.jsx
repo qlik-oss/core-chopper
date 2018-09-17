@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import Header from './header';
 import Scan from './scan';
 import HighScore from './high-score';
+import Stats from './stats';
 import Engine from './engine';
 
 import './index.css';
@@ -53,7 +54,10 @@ class Index extends React.Component {
       view = (
         <div className="start">
           <Scan user={user} onDone={u => this.done(u)} />
-          <HighScore />
+          <div className="info">
+            <HighScore />
+            <Stats />
+          </div>
         </div>
       );
     } else {

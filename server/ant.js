@@ -22,7 +22,7 @@ stick.on('startup', () => {
 });
 
 if (!stick.open()) {
-  throw new Error('Stick not found!');
+  // throw new Error('Stick not found!');
 }
 
 module.exports = {

@@ -3,13 +3,19 @@ const schema = require('enigma.js/schemas/12.20.0.json');
 
 const url = 'ws://localhost:9076/app';
 const host_hostname = 'docker.for.mac.localhost';
-let session = null;
+let currentDoc = null;
+const objectCache = {};
 
 const docMixin = {
   types: ['Doc'],
   extend: {
+    getOrCreateObjectLayout(name, def) {
+      objectCache[name] = objectCache[name] || this.createSessionObject(def);
+      return objectCache[name].then(obj => obj.getLayout());
+    },
+
     getHighScore() {
-      return this.createSessionObject({
+      return this.getOrCreateObjectLayout('highscore', {
         qInfo: {
           qType: 'highscore',
         },
@@ -30,17 +36,35 @@ const docMixin = {
           }],
           qInterColumnSortOrder: [1, 0],
         },
-      }).then(obj => obj.getLayout());
+      });
+    },
+
+    getScoresPerPlayer() {
+      return this.getOrCreateObjectLayout('scores-per-player', {
+        qInfo: {
+          qType: 'scores',
+        },
+        qHyperCubeDef: {
+          qDimensions: [
+            { qDef: { qFieldDefs: ['=Timestamp(Timestamp(\'1970-01-01 00:00:00.000\') + [time]/1000/60/60/24)'] } },
+            { qDef: { qFieldDefs: ['name'] } },
+          ],
+          qMeasures: [
+            { qDef: { qDef: 'AVG(speed)' } },
+          ],
+          qInitialDataFetch: [{
+            qWidth: 3,
+            qHeight: 1000,
+          }],
+          qInterColumnSortOrder: [1, 0, 2],
+        },
+      });
     },
   },
 };
 
-export default async function getDoc() {
-  if (session) {
-    const global = await session.open();
-    return global.getActiveDoc();
-  }
-  session = enigma.create({ url, schema, mixins: [docMixin] });
+async function getNewDoc() {
+  const session = enigma.create({ url, schema, mixins: [docMixin] });
   const global = await session.open();
   const doc = await global.createSessionApp();
 
@@ -93,4 +117,11 @@ FROM [lib://entries]
   await doc.setScript(script);
   await doc.doReload();
   return doc;
+}
+
+export default async function getDoc() {
+  if (!currentDoc) {
+    currentDoc = getNewDoc();
+  }
+  return currentDoc;
 }

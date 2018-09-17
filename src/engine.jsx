@@ -58,8 +58,6 @@ class Engine extends React.Component {
         engine.add(new Floor(i, 0));
       }
       engine.add(new HUD(engine, chopper));
-      // hook up to ant+ data and trigger bounce method based on values:
-      // setInterval(() => chopper.bounce(), 2000);
       engine.input.pointers.primary.on('down', () => {
         chopper.bounce(5);
       });
