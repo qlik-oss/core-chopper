@@ -27,3 +27,7 @@ input {
   align-items: center;
   justify-content: space-evenly;
 }
+
+.index .start > div {
+  width: 40%;
+}
