@@ -1,6 +1,9 @@
 const http = require('http');
 const fs = require('fs');
 const { NFC } = require('nfc-pcsc');
+const {
+  getOrCreateUser, updateUser, getAllPlayers, createGame, updateGame, createEntries, getAllGames, getAllEntries, removeGame, removeEntries
+} = require('./lowdb');
 
 const nfc = new NFC();
 const createWebSocketServer = require('./ws');
@@ -10,16 +13,14 @@ const REST_PORT = 8081;
 const WSS_PORT = 8080;
 
 nfc.on('reader', (reader) => {
-  console.log('NFC reader attched');
+  console.log('NFC reader attached');
   reader.on('card', (card) => {
-    // TODO Add logic to query lowdb and search for existing user
+    const user = getOrCreateUser(card.uid);
+    currentUser = user;
     console.log(card.uid);
     sockets.forEach(s => s.send(JSON.stringify({
       type: 'nfc',
-      data: {
-        id: card.uid,
-        name: '',
-      },
+      data: user,
     })));
   });
   reader.on('error', (err) => {
@@ -31,40 +32,46 @@ nfc.on('error', (err) => {
   console.error('NFC card reader error ', err);
 });
 
-const { socket, sockets } = createWebSocketServer(WSS_PORT);
-
-let isStarted = false;
+let currentGame = null;
 let currentUser = { id: null, name: null };
-
-socket.on('message', (data) => {
-  const result = JSON.parse(data);
-  console.log('socket data', data.result);
-  if (result.type === 'set-user') {
-    currentUser = result.data;
-  } else if (result.type === 'started') {
-    isStarted = true;
-  } else if (result.type === 'highscore') {
-    isStarted = false;
-    // update games.csv with highscore
-    // result.data;
-  }
-});
-
 let latestSpeed = 0;
 let latestCadence = 0;
 let latestPower = 0;
 let latestWrite = 0;
-const writeStream = fs.createWriteStream(`${__dirname}/mock/entries.csv`, { flags: 'a' });
 
-// also stream data to csv files on disk on these events using "currentUser" and "isStarted":
+
+const { socket, sockets } = createWebSocketServer(WSS_PORT, (data) => {
+  const result = JSON.parse(data);
+  console.log('socket data', result);
+  if (result.type === 'set-user') {
+    updateUser(result.data);
+    currentUser = result.data;
+  } else if (result.type === 'started') {
+    currentGame = createGame(currentUser);
+  } else if (result.type === 'ended') {
+    // update games.csv with highscore
+    // result.data;
+    updateGame(currentGame, result.data);
+    currentGame = null;
+  }
+}, () => {
+  if (currentGame) {
+    removeGame(currentGame);
+    removeEntries(currentGame);
+  }
+  currentUser = null;
+  currentGame = null;
+});
+
 speedSensor.on('speedData', (data) => {
   if (latestWrite === data.SpeedEventTime) {
     return;
   }
   latestWrite = data.SpeedEventTime;
   latestSpeed = data.CalculatedSpeed;
-  writeStream.write(`1,${+new Date()},${latestSpeed},${latestCadence},${latestPower}\n`);
-  // console.log('wrote data', data.CalculatedSpeed);
+  if (currentGame) {
+    createEntries(currentGame, latestSpeed, latestCadence, latestPower);
+  }
   const { DeviceID, CalculatedSpeed, CumulativeSpeedRevolutionCount } = data;
   sockets.forEach(s => s.send(JSON.stringify({
     type: 'ant-speed',
@@ -101,11 +108,20 @@ if (powerSensor) {
 const server = http.createServer((req, res) => {
   try {
     if (req.url === '/csv/players') {
-      res.end(fs.readFileSync(`${__dirname}/mock/players.csv`));
+      const players = getAllPlayers();
+      let out = 'userid,name\n';
+      out += players.map(p => `${p.userid},${p.name}\n`).join('');
+      res.end(out);
     } else if (req.url === '/csv/games') {
-      res.end(fs.readFileSync(`${__dirname}/mock/games.csv`));
+      const games = getAllGames();
+      let out = 'userid,gameid,starttime,endtime,score\n';
+      out += games.map(p => `${p.userid},${p.gameid},${p.starttime},${p.endtime},${p.score}\n`).join('');
+      res.end(out);
     } else if (req.url === '/csv/entries') {
-      res.end(fs.readFileSync(`${__dirname}/mock/entries.csv`));
+      const entires = getAllEntries();
+      let out = 'gameid,time,duration,speed,cadence,power\n';
+      out += entires.map(p => `${p.gameid},${p.time},${p.duration},${p.speed},${p.cadence},${p.power}\n`).join('');
+      res.end(out);
     } else {
       res.status = 404;
       res.end('Not found');

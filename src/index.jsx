@@ -44,13 +44,31 @@ class Index extends React.Component {
   }
 
   done(user) {
+    this.socket.send(JSON.stringify({
+      type: 'set-user',
+      data: user,
+    }));
     this.setState({ user });
+  }
+
+  gameStarted() {
+    this.socket.send(JSON.stringify({
+      type: 'started',
+      data: {},
+    }));
+  }
+
+  gameEnded(score) {
+    this.socket.send(JSON.stringify({
+      type: 'ended',
+      data: { score },
+    }));
   }
 
   render() {
     const { user } = this.state;
     let view;
-    if (!user.id || !user.name) {
+    if (!user.userid || !user.name) {
       view = (
         <div className="start">
           <Scan user={user} onDone={u => this.done(u)} />
@@ -61,7 +79,14 @@ class Index extends React.Component {
         </div>
       );
     } else {
-      view = <Engine user={user} registerListener={fn => this.registerListener(fn)} />;
+      view = (
+        <Engine
+          user={user}
+          onStarted={() => this.gameStarted()}
+          onEnded={(...args) => this.gameEnded(...args)}
+          registerListener={fn => this.registerListener(fn)}
+        />
+      );
     }
     // todo: fix this.setState({ user: { id: null, name: null } })
     // need to tear down the game engine instance somehow
