@@ -39,24 +39,24 @@ const docMixin = {
       });
     },
 
-    getScoresPerPlayer() {
-      return this.getOrCreateObjectLayout('scores-per-player', {
+    getPowerLayout() {
+      return this.getOrCreateObjectLayout('power-over-time', {
         qInfo: {
           qType: 'scores',
         },
         qHyperCubeDef: {
           qDimensions: [
-            { qDef: { qFieldDefs: ['=Timestamp(Timestamp(\'1970-01-01 00:00:00.000\') + [time]/1000/60/60/24)'] } },
-            { qDef: { qFieldDefs: ['name'] } },
+            { qDef: { qFieldDefs: ['[duration]'] } },
+            { qDef: { qFieldDefs: ['=[name]&\'::\'&[gameid]'] } },
           ],
           qMeasures: [
-            { qDef: { qDef: 'AVG(speed)' } },
+            { qDef: { qDef: 'Avg([power])' } },
           ],
           qInitialDataFetch: [{
             qWidth: 3,
-            qHeight: 1000,
+            qHeight: 3333,
           }],
-          qInterColumnSortOrder: [1, 0, 2],
+          qInterColumnSortOrder: [0, 1],
         },
       });
     },

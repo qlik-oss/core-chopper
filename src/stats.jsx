@@ -44,11 +44,11 @@ players in total. They have played
           {' '}
 games, averaging a speed of
           {' '}
-          <strong>{Math.round((stats.avgSpeed * 18) / 5)}</strong>
+          <strong>{Math.round((isNaN(stats.avgSpeed) ? 0 : stats.avgSpeed) * 18 / 5)}</strong>
           {' '}
 km/h with an average cadence of
           {' '}
-          <strong>{Math.round(stats.avgCadence)}</strong>
+          <strong>{Math.round(isNaN(stats.avgCadence) ? 0 : stats.avgCadence)}</strong>
 .
         </p>
       </div>

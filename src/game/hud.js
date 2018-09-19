@@ -10,15 +10,15 @@ export default ex.UIActor.extend({
     this.powerLabel = new ex.Label({
       baseAlign: ex.BaseAlign.Top,
       fontFamily: 'VT323',
-      fontSize: 34,
+      fontSize: 48,
       pos: new ex.Vector(20, 20),
       color: ex.Color.White,
     });
     this.scoreLabel = new ex.Label({
       baseAlign: ex.BaseAlign.Top,
       fontFamily: 'VT323',
-      fontSize: 34,
-      pos: new ex.Vector(20, engine.drawHeight - 44),
+      fontSize: 48,
+      pos: new ex.Vector(20, engine.drawHeight - 64),
       color: ex.Color.White,
     });
     this.heightLabel = new ex.Label({

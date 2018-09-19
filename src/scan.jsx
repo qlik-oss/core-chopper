@@ -29,11 +29,13 @@ export default class Scan extends React.Component {
   render() {
     const { user, useScanner } = this.state;
     const manual = (
-      <p>
+      <div className="name">
+        <p>
 Write your name:
-        {' '}
-        <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
-      </p>
+          {' '}
+          <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
+        </p>
+      </div>
     );
     const scanner = (
       <div className="scan">

@@ -53,6 +53,16 @@ export default ex.Actor.extend({
 
   update(engine, delta) {
     ex.Actor.prototype.update.apply(this, [engine, delta]);
+    if (this.y > 0) {
+      this.dead = true;
+      this.rx = 10;
+      // engine.input.pointers.primary.off('down');
+      // gameOver();
+      engine.currentScene.camera.shake(10, 10, 500);
+      this.vel.y = 0;
+      this.y += 20;
+      this.kill();
+    }
     if (this.dead || !this.hasBounced || this.locked) {
       return;
     }
@@ -73,16 +83,16 @@ export default ex.Actor.extend({
     }
   },
 
-  bounce(speed) {
+  bounce(power) {
     this.hasBounced = true;
     if (this.locked) {
       return;
     }
-    if (!speed) {
+    if (!power) {
       // skip 0 speed to avoid "jumpy" acceleration:
       return;
     }
-    const adjustedSpeed = -speed * 50;
+    const adjustedSpeed = -power * 2;
     this.upAnimation.reset();
     this.setDrawing('up');
     this.vel.y = ex.Util.clamp(
@@ -93,8 +103,8 @@ export default ex.Actor.extend({
     // Resource.FlapSound.play();
     const velocityAngle = new ex.Vector(-Settings.LEVEL_SPEED, this.vel.y).normalize().toAngle();
     this.animatingUpwards = true;
-    // this.actions.clearActions();
+    this.actions.clearActions();
     // this.rotation = velocityAngle;
-    this.actions.rotateBy(velocityAngle, 1000).callMethod(() => { this.animatingUpwards = false; });
+    this.actions.rotateBy(velocityAngle, 1500).callMethod(() => { this.animatingUpwards = false; });
   },
 });

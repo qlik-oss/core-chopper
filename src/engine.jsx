@@ -25,12 +25,11 @@ class Engine extends React.Component {
   }
 
   socketData(result) {
-    if (result.type === 'ant-speed' && this.chopper) {
-      if (this.lastRevCount === result.data.CumulativeSpeedRevolutionCount) {
+    if (result.type === 'ant-power' && this.chopper) {
+      if (!result.data.Power) {
         return;
       }
-      this.lastRevCount = result.data.CumulativeSpeedRevolutionCount;
-      this.chopper.bounce(result.data.CalculatedSpeed);
+      this.chopper.bounce(result.data.Power);
     }
   }
 

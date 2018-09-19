@@ -10,8 +10,8 @@ export default ex.UIActor.extend({
       textAlign: ex.TextAlign.Center,
       baseAlign: ex.BaseAlign.Top,
       fontFamily: 'VT323',
-      fontSize: 42,
-      pos: new ex.Vector(engine.drawWidth / 2, (engine.drawHeight / 2) - 100),
+      fontSize: 84,
+      pos: new ex.Vector(engine.drawWidth / 2, (engine.drawHeight / 2) - 200),
       color: ex.Color.White,
     });
     this.add(this.countDownLabel);
