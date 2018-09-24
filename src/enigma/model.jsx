@@ -1,4 +1,5 @@
 import React from 'react';
+
 import getDoc from './session';
 
 export default class Model extends React.Component {
