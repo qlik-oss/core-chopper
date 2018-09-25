@@ -3,6 +3,7 @@ import React from 'react';
 import Scan from './scan';
 import HighScore from './high-score';
 import PowerChart from './power-chart';
+import CaloryChart from './calory-chart';
 
 import './layout.css';
 
@@ -25,6 +26,7 @@ export default class Dashboard extends React.Component {
           <Scan user={user} onDone={u => this.done(u)} />
           <HighScore />
         </div>
+        <CaloryChart />
         <PowerChart />
       </div>
     );
