@@ -52,7 +52,7 @@ Write your name:
 Looks like this is your first time riding the chopper!
 Please fill in your name:
           </p>
-          <input onKeyUp={evt => this.manualInput(evt)} />
+          <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
         </div>
       );
     }

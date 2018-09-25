@@ -65,8 +65,9 @@ export default ex.Actor.extend({
     const powerModifier = this.y / 50;
     this.powerModifier = powerModifier;
     if (!this.animatingUpwards) {
+      this.unclampedVelocity = this.vel.y + (Settings.ACCELERATION / 60);
       this.vel.y = ex.Util.clamp(
-        this.vel.y + (Settings.ACCELERATION / 60),
+        this.unclampedVelocity,
         -Settings.MAX_VELOCITY,
         Settings.MAX_DOWNWARDS_VELOCITY,
       );
@@ -91,8 +92,9 @@ export default ex.Actor.extend({
     const adjustedSpeed = -power * 2;
     this.upAnimation.reset();
     this.setDrawing('up');
+    this.unclampedVelocity = this.vel.y + (adjustedSpeed - this.powerModifier);
     this.vel.y = ex.Util.clamp(
-      this.vel.y + (adjustedSpeed - this.powerModifier),
+      this.unclampedVelocity,
       -Settings.MAX_VELOCITY,
       Settings.MAX_DOWNWARDS_VELOCITY,
     );
