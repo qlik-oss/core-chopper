@@ -25,6 +25,7 @@ export default class Dashboard extends React.Component {
         <div className="top">
           <Scan user={user} onDone={u => this.done(u)} />
           <HighScore />
+          <HighScore distinct />
         </div>
         <CaloryChart />
         <PowerChart />

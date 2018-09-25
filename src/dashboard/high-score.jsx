@@ -11,15 +11,14 @@ const genericProps = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['name'] } },
+      { qDef: { qFieldDefs: ['[name]'] } },
       {
         qDef: {
           qFieldDefs: ['score'],
           qReverseSort: true,
           qSortCriterias: [{ qSortByNumeric: true }],
         },
-      },
-    ],
+      }],
     qInitialDataFetch: [{
       qWidth: 2,
       qHeight: 10,
@@ -28,23 +27,46 @@ const genericProps = {
   },
 };
 
+const genericPropsDistinct = {
+  qInfo: {
+    qType: 'highscore-distinct',
+  },
+  qHyperCubeDef: {
+    qDimensions: [
+      { qDef: { qFieldDefs: ['[name]'] } },
+    ],
+    qMeasures: [{
+      qDef: {
+        qDef: 'Max([score])',
+        qReverseSort: true,
+      },
+      qSortBy: { qSortByNumeric: 1 },
+    }],
+    qInitialDataFetch: [{
+      qWidth: 2,
+      qHeight: 15,
+    }],
+    qInterColumnSortOrder: [1, 0],
+  },
+};
+
 export default class HighScore extends EnigmaModel {
-  constructor() {
-    super({ genericProps });
+  constructor({ distinct }) {
+    super({ genericProps: distinct ? genericPropsDistinct : genericProps });
+    this.state = { distinct };
   }
 
   render() {
-    const { layout } = this.state;
+    const { layout, distinct } = this.state;
     if (!layout) {
       return (<p>Loading...</p>);
     }
+    const title = distinct ? 'Personal bests' : 'High scores';
     const matrix = layout.qHyperCube.qDataPages[0].qMatrix;
     if (!matrix.length) {
       return (<p>No highscores yet!</p>);
     }
     const rows = matrix
-      .sort((a, b) => b[1].qNum - a[1].qNum)
-    //      .slice(0, 5)
       .map((r, i) => (
         <tr key={r[0].qText + r[1].qNum}>
           <td>{i + 1}</td>
@@ -54,7 +76,7 @@ export default class HighScore extends EnigmaModel {
       ));
     return (
       <div className="high-score">
-        <h2>High scores</h2>
+        <h2>{title}</h2>
         <table>
           <thead>
             <tr>
@@ -67,7 +89,7 @@ export default class HighScore extends EnigmaModel {
             {rows}
           </tbody>
         </table>
-        <Stats />
+        {distinct ? '' : <Stats />}
       </div>
     );
   }
