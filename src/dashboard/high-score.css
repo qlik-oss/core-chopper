@@ -2,6 +2,7 @@
 .high-score table td {
   width: 33%;
   text-align: left;
+  line-height: 0.6;
 }
 
 .high-score table tr > :last-child {

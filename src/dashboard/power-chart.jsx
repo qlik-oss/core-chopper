@@ -71,10 +71,6 @@ const settings = {
       type: 'linear',
       invert: false,
       _padding: 0.2,
-      expand: 0.05,
-      /* ticks: {
-        count: 100,
-      }, */
     },
     y: {
       data: {
@@ -118,6 +114,9 @@ const settings = {
     type: 'grid-line',
     x: { scale: 'x' },
     y: { scale: 'y' },
+    ticks: {
+      stroke: 'rgba(0, 0, 0, 0.1)',
+    },
   }, {
     type: 'line',
     data: {
@@ -153,14 +152,15 @@ const settings = {
     scale: 'color',
     dock: 'right',
     settings: {
-      layout: { size: 25 },
+      layout: { size: 50 },
       title: { show: false },
       item: {
-        shape: { size: 14 },
+        shape: { size: 10 },
         label: {
+          maxWidth: 100,
           fontFamily: 'VT323',
           fill: '#fff',
-          fontSize: '20px',
+          fontSize: '16px',
           text: t => t.datum.label.split('::')[0],
         },
       },
@@ -242,13 +242,8 @@ export default class PowerChart extends EnigmaModel {
 
   async renderPicasso() {
     const { layout, model } = this.state;
-    this.setState({ initialized: true });
     // const field = await this.getField('name');
     // await field.selectValues([{ qText: 'Andrée' }, { qText: 'Johan B' }]);
-    if (!layout.qHyperCube.qDataPages[0].qMatrix.length) {
-      this.setState({ empty: true });
-      return;
-    }
     const contData = await model.getHyperCubeContinuousData(
       '/qHyperCubeDef',
       {
@@ -270,30 +265,24 @@ export default class PowerChart extends EnigmaModel {
       data: layout.qHyperCube,
     }];
 
-    picasso.chart({
+    this.pic = picasso.chart({
       element: this.container,
       data,
       settings,
     });
-
-    this.setState({ empty: false });
   }
 
   render() {
-    const { layout, initialized, empty } = this.state;
+    const { layout } = this.state;
 
-    let view = (<div className="power-chart" ref={(elem) => { this.container = elem; }}>Loading...</div>);
-
-    if (empty) {
-      view = (<p>No data to visualize.</p>);
-    } else if (layout && !initialized) {
+    if (layout && this.container && !this.pic) {
       // we need to have the `this.container` reference available when rendering:
       setTimeout(() => this.renderPicasso());
     }
     return (
       <div className="power-wrapper">
         <h2>Power over time</h2>
-        {view}
+        <div className="power-chart" ref={(elem) => { this.container = elem; }}>Loading...</div>
       </div>
     );
   }
