@@ -15,7 +15,7 @@ const genericProps = {
   qHyperCubeDef: {
     qDimensions: [
       { qDef: { qFieldDefs: ['=ROUND([duration]/1000/5)'] } },
-      { qDef: { qFieldDefs: ['=[name]&\'::\'&[gameid]'] } },
+      { qDef: { qFieldDefs: ['=[name]&\'::\'&[gameid]&\'::\'&[userid]'] } },
     ],
     qMeasures: [
       { qDef: { qDef: 'Avg([power])' } },

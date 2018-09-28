@@ -18,6 +18,7 @@ export default class Scan extends React.Component {
     user.name = evt.target.value.trim();
     if (!user.userid) {
       user.userid = user.name;
+      user.cardid = null;
     }
     if (user.name !== '' && evt.key === 'Enter') {
       // close view

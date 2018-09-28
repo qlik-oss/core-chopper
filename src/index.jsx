@@ -16,7 +16,7 @@ class Index extends React.Component {
   constructor() {
     super();
     this.state = {
-      user: { userid: null, name: '' },
+      user: { userid: null, cardid: null, name: '' },
     };
     this.listeners = [];
     this.socket = new WebSocket('ws://localhost:8080');

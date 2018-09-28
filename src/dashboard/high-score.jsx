@@ -11,7 +11,7 @@ const genericProps = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['[name]'] } },
+      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
       {
         qDef: {
           qFieldDefs: ['score'],
@@ -33,7 +33,7 @@ const genericPropsDistinct = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['[name]'] } },
+      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
     ],
     qMeasures: [{
       qDef: {
@@ -70,7 +70,7 @@ export default class HighScore extends EnigmaModel {
       .map((r, i) => (
         <tr key={r[0].qText + r[1].qNum}>
           <td>{i + 1}</td>
-          <td>{r[0].qText}</td>
+          <td>{r[0].qText.split('::')[0]}</td>
           <td>{r[1].qText}</td>
         </tr>
       ));

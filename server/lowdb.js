@@ -19,15 +19,13 @@ const playerdb = new Lowdb('players', { players: [] });
 const gamedb = new Lowdb('games', { games: [] });
 const entrydb = new Lowdb('entries', { entries: [] });
 
-function getOrCreateUser(id) {
-  const player = { userid: id, name: '' };
-  const result = playerdb.get('players').find({ userid: id }).value();
+function getOrCreateUser(cardid) {
+  const player = { userid: shortid.generate(), cardid, name: '' };
+  let result = playerdb.get('players').find({ cardid }).value();
   if (!result) {
-    playerdb.get('players').push(player).write();
-  } else {
-    player.name = result.name;
+    result = playerdb.get('players').push(player).write();
   }
-  return player;
+  return result;
 }
 
 function createEntries(currentGame, latestSpeed, latestCadence, latestPower) {

@@ -22,7 +22,7 @@ const REST_PORT = 8081;
 const WSS_PORT = 8080;
 
 let currentGame = null;
-let currentUser = { userid: null, name: null };
+let currentUser = { userid: null, cardid: null, name: null };
 let latestSpeed = 0;
 let latestCadence = 0;
 let latestPower = 0;
@@ -32,7 +32,7 @@ const { sockets } = createWebSocketServer(WSS_PORT, (data) => {
   const result = JSON.parse(data);
   console.log('socket data', result);
   if (result.type === 'set-user') {
-    getOrCreateUser(result.data.userid);
+    getOrCreateUser(result.data.cardid);
     updateUser(result.data);
     currentUser = result.data;
   } else if (result.type === 'started') {
@@ -57,7 +57,7 @@ nfc.on('reader', (reader) => {
   reader.on('card', (card) => {
     const user = getOrCreateUser(card.uid);
     currentUser = user;
-    console.log(card.uid);
+    console.log('scanned user', user);
     sockets.forEach(s => s.send(JSON.stringify({
       type: 'nfc',
       data: user,
@@ -114,8 +114,8 @@ const server = http.createServer((req, res) => {
   try {
     if (req.url === '/csv/players') {
       const players = getAllPlayers();
-      let out = 'userid,name\n';
-      out += players.map(p => `${p.userid},${p.name}\n`).join('');
+      let out = 'userid,cardid,name\n';
+      out += players.map(p => `${p.userid},${p.cardid},${p.name}\n`).join('');
       res.end(out);
     } else if (req.url === '/csv/games') {
       const games = getAllGames();

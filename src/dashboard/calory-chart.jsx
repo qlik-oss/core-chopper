@@ -14,7 +14,7 @@ const genericProps = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['[name]'] } },
+      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
     ],
     qMeasures: [
       // Average watt/hour (power) * hours bicycled * 3.6 = kcal burnt
@@ -42,6 +42,7 @@ const settings = {
       data: {
         extract: {
           field: 'qDimensionInfo/0',
+          label: v => v.qText.split('::')[0],
         },
       },
       padding: 0,
