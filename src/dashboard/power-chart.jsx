@@ -83,7 +83,7 @@ const settings = {
     },
     color: {
       type: 'color',
-      data: { extract: { field: 'qDimensionInfo/1', value: v => v.qText.split('::')[0] } },
+      data: { extract: { field: 'qDimensionInfo/1', value: v => v.qText.split('::')[2] } },
       range: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'].concat(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']),
     },
   },
@@ -128,6 +128,7 @@ const settings = {
         props: {
           run: { field: 'qDimensionInfo/1' },
           name: { field: 'qDimensionInfo/1', value: v => v.qText.split('::')[0] },
+          id: { field: 'qDimensionInfo/1', value: v => v.qText.split('::')[2] },
           minor: { field: 'qMeasureInfo/0' },
         },
       },
@@ -139,7 +140,7 @@ const settings = {
           strokeWidth: 5,
           stroke: {
             scale: 'color',
-            ref: 'name',
+            ref: 'id',
           },
         },
       },
