@@ -8,13 +8,15 @@ import './power-chart.css';
 
 picasso.use(picassoQ);
 
+const ROUND_TO_SECONDS = 5;
+
 const genericProps = {
   qInfo: {
     qType: 'scores',
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['=ROUND([duration]/1000/5)'] } },
+      { qDef: { qFieldDefs: [`=ROUND([duration]/1000/${ROUND_TO_SECONDS})`] } },
       { qDef: { qFieldDefs: ['=[name]&\'::\'&[gameid]&\'::\'&[userid]'] } },
     ],
     qMeasures: [
@@ -60,7 +62,7 @@ function debounce(fn) {
   };
 }
 
-picasso.formatter('secs', () => v => duration(v * 5));
+picasso.formatter('secs', () => v => duration(v * ROUND_TO_SECONDS));
 
 const settings = {
   scales: {
