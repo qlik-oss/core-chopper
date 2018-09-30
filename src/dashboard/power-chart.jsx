@@ -137,7 +137,9 @@ const settings = {
       layers: {
         curve: 'monotone',
         line: {
+          strokeDasharray: v => (v.datum.id.value === '21f25745-d611-477a-8c31-654feca511e5' ? '' : '1'),
           strokeWidth: 5,
+          opacity: v => (v.datum.id.value === '21f25745-d611-477a-8c31-654feca511e58' ? 1 : 0.3),
           stroke: {
             scale: 'color',
             ref: 'id',

@@ -1,6 +1,5 @@
 import React from 'react';
 
-import Scan from './scan';
 import HighScore from './high-score';
 import PowerChart from './power-chart';
 import CaloryChart from './calory-chart';
@@ -23,9 +22,8 @@ export default class Dashboard extends React.Component {
     return (
       <div className="dashboard">
         <div className="top">
-          <Scan user={user} onDone={u => this.done(u)} />
-          <HighScore />
-          <HighScore distinct />
+          <HighScore user={user} />
+          <HighScore user={user} distinct />
         </div>
         <CaloryChart />
         <PowerChart />

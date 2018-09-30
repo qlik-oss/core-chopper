@@ -14,7 +14,8 @@ const genericProps = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
+      { qDef: { qFieldDefs: ['[userid]'] } },
+      { qDef: { qFieldDefs: ['[name]'] } },
     ],
     qMeasures: [
       // Average watt/hour (power) * hours bicycled * 3.6 = kcal burnt
@@ -27,10 +28,10 @@ const genericProps = {
       },
     ],
     qInitialDataFetch: [{
-      qWidth: 2,
-      qHeight: 5000,
+      qWidth: 3,
+      qHeight: 3333,
     }],
-    qInterColumnSortOrder: [1, 0],
+    qInterColumnSortOrder: [2, 1, 0],
     qSuppressMissing: true,
     qSuppressZero: true,
   },
@@ -42,7 +43,14 @@ const settings = {
       data: {
         extract: {
           field: 'qDimensionInfo/0',
-          label: v => v.qText.split('::')[0],
+        },
+      },
+      padding: 0.2,
+    },
+    labels: {
+      data: {
+        extract: {
+          field: 'qDimensionInfo/1',
         },
       },
       padding: 0,
@@ -74,7 +82,7 @@ const settings = {
   }, {
     key: 'x-axis',
     type: 'axis',
-    scale: 'x',
+    scale: 'labels',
     dock: 'bottom',
     settings: {
       labels: {
@@ -107,6 +115,7 @@ const settings = {
       minor: { scale: 'y' },
       box: {
         fill: { scale: 'c', ref: 'name' },
+        opacity: v => (v.datum.label === '21f25745-d611-477a-8c31-654feca511e5' ? 1 : 0.3),
       },
     },
   }, {

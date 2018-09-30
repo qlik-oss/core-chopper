@@ -8,27 +8,29 @@ export default class Header extends React.Component {
   constructor(props) {
     super();
     this.onClose = props.onClose;
-    this.state = { showBack: false };
+    this.onStart = props.onStart;
+    this.state = {};
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ showBack: nextProps.showBack });
+  componentWillReceiveProps({ showBack, showPlay }) {
+    this.setState({ showBack, showPlay });
   }
 
   render() {
-    const { showBack } = this.state;
-    const back = showBack ? (
+    const { showBack, showPlay } = this.state;
+    const right = (
       <div className="right">
-        <span onClick={() => this.onClose()}>Back to main screen</span>
+        {showBack && (<span onClick={() => this.onClose()}>Back to main screen</span>)}
+        {showPlay && (<span onClick={() => this.onStart()}>Start game</span>)}
       </div>
-    ) : '';
+    );
     return (
       <section className="header">
         <div className="left">
           <img alt="Qlik Core logo" src={logo} />
           <span>/ Chopper</span>
         </div>
-        {back}
+        {right}
       </section>
     );
   }

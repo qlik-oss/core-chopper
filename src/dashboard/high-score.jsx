@@ -11,7 +11,8 @@ const genericProps = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
+      { qDef: { qFieldDefs: ['[userid]'] } },
+      { qDef: { qFieldDefs: ['[name]'] } },
       {
         qDef: {
           qFieldDefs: ['score'],
@@ -20,10 +21,10 @@ const genericProps = {
         },
       }],
     qInitialDataFetch: [{
-      qWidth: 2,
+      qWidth: 3,
       qHeight: 10,
     }],
-    qInterColumnSortOrder: [1, 0],
+    qInterColumnSortOrder: [2, 0],
   },
 };
 
@@ -33,7 +34,8 @@ const genericPropsDistinct = {
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
+      { qDef: { qFieldDefs: ['[userid]'] } },
+      { qDef: { qFieldDefs: ['[name]'] } },
     ],
     qMeasures: [{
       qDef: {
@@ -43,21 +45,21 @@ const genericPropsDistinct = {
       qSortBy: { qSortByNumeric: 1 },
     }],
     qInitialDataFetch: [{
-      qWidth: 2,
+      qWidth: 3,
       qHeight: 15,
     }],
-    qInterColumnSortOrder: [1, 0],
+    qInterColumnSortOrder: [2, 0],
   },
 };
 
 export default class HighScore extends EnigmaModel {
-  constructor({ distinct }) {
+  constructor({ user, distinct }) {
     super({ genericProps: distinct ? genericPropsDistinct : genericProps });
-    this.state = { distinct };
+    this.state = { user, distinct };
   }
 
   render() {
-    const { layout, distinct } = this.state;
+    const { user, layout, distinct } = this.state;
     if (!layout) {
       return (<p>Loading...</p>);
     }
@@ -67,13 +69,16 @@ export default class HighScore extends EnigmaModel {
       return (<p>No highscores yet!</p>);
     }
     const rows = matrix
-      .map((r, i) => (
-        <tr key={r[0].qText + r[1].qNum}>
-          <td>{i + 1}</td>
-          <td>{r[0].qText.split('::')[0]}</td>
-          <td>{r[1].qText}</td>
-        </tr>
-      ));
+      .map((r, i) => {
+        const classes = [r[0].qText === user.userid ? 'me' : ''];
+        return (
+          <tr key={r[0].qText + r[2].qNum + distinct} className={classes}>
+            <td>{i + 1}</td>
+            <td>{r[1].qText}</td>
+            <td>{r[2].qText}</td>
+          </tr>
+        );
+      });
     return (
       <div className="high-score">
         <h2>{title}</h2>

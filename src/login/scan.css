@@ -1,16 +1,12 @@
 .scan {
   text-align: center;
-}
-
-.scan .badge {
+  height: calc(100vh - 42px);
   background: url(../resources/id-badge.svg) center no-repeat;
-  height: 100%;
+  background-size: 30%;
   cursor: pointer;
   display: flex;
   align-items: center;
-  font-size: 1.5rem;
-  text-shadow: none;
-  color: #333;
-  padding: 2rem;
+  font-size: 6rem;
+  padding: 12rem;
   box-sizing: border-box;
 }

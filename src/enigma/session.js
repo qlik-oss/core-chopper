@@ -10,7 +10,17 @@ const docMixin = {
   types: ['Doc'],
   extend: {
     async getOrCreateObject(name, def) {
-      objectCache[name] = objectCache[name] || this.createSessionObject(def);
+      const fromCache = objectCache[name];
+      if (fromCache) {
+        // if we're in a dev environment, set properties here to ensure
+        // the properties object is up-to-date:
+        if (module.hot) {
+          const model = await fromCache;
+          model.setProperties(def);
+        }
+        return fromCache;
+      }
+      objectCache[name] = this.createSessionObject(def);
       return objectCache[name];
     },
   },

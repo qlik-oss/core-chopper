@@ -1,4 +1,5 @@
 /* eslint no-console: 0 */
+
 const http = require('http');
 const { NFC } = require('nfc-pcsc');
 const {
@@ -26,25 +27,29 @@ let currentUser = { userid: null, cardid: null, name: null };
 let latestSpeed = 0;
 let latestCadence = 0;
 let latestPower = 0;
-let latestWrite = 0;
 
 const { sockets } = createWebSocketServer(WSS_PORT, (data) => {
   const result = JSON.parse(data);
-  console.log('socket data', result);
-  if (result.type === 'set-user') {
-    getOrCreateUser(result.data.cardid);
-    updateUser(result.data);
-    currentUser = result.data;
-  } else if (result.type === 'started') {
+  console.log('socket:received', data);
+  if (result.type === 'user:save') {
+    const user = getOrCreateUser(result.data.cardid);
+    Object.assign(user, result.data);
+    updateUser(user);
+    sockets.forEach(s => s.send(JSON.stringify({
+      type: 'user:updated',
+      data: user,
+    })));
+    currentUser = user;
+  } else if (result.type === 'game:started') {
     currentGame = createGame(currentUser);
-  } else if (result.type === 'ended') {
+  } else if (result.type === 'game:ended') {
     updateGame(currentGame, result.data);
     currentGame = null;
   }
 }, () => {
-  console.log('socket closed');
+  console.log('socket:closed');
   if (currentGame) {
-    console.log('cleaning up ongoing game due to socket interruption');
+    console.log('game:cleaning up');
     removeGame(currentGame);
     removeEntries(currentGame);
   }
@@ -53,62 +58,56 @@ const { sockets } = createWebSocketServer(WSS_PORT, (data) => {
 });
 
 nfc.on('reader', (reader) => {
-  console.log('NFC reader attached');
+  console.log('reader:attached');
   reader.on('card', (card) => {
     const user = getOrCreateUser(card.uid);
-    currentUser = user;
-    console.log('scanned user', user);
-    sockets.forEach(s => s.send(JSON.stringify({
-      type: 'nfc',
-      data: user,
-    })));
+    if (currentUser && currentUser.userid === user.userid) {
+      sockets.forEach(s => s.send(JSON.stringify({
+        type: 'user:scanned',
+        data: {},
+      })));
+    } else {
+      currentUser = user;
+      console.log('reader:scanned', user);
+      sockets.forEach(s => s.send(JSON.stringify({
+        type: 'user:updated',
+        data: user,
+      })));
+    }
   });
   reader.on('error', (err) => {
-    console.error('error reading card ', err);
+    console.error('reader:error ', err);
   });
 });
 
 speedSensor.on('speedData', (data) => {
-  if (latestWrite === data.SpeedEventTime) {
-    return;
-  }
-  latestWrite = data.SpeedEventTime;
   latestSpeed = data.CalculatedSpeed;
-  if (currentGame) {
-    createEntries(currentGame, latestSpeed, latestCadence, latestPower);
-  }
-  const { DeviceID, CalculatedSpeed, CumulativeSpeedRevolutionCount } = data;
-  sockets.forEach(s => s.send(JSON.stringify({
-    type: 'ant-speed',
-    data: {
-      DeviceID, CalculatedSpeed, CumulativeSpeedRevolutionCount,
-    },
-  })));
+  // const { DeviceID, CalculatedSpeed, CumulativeSpeedRevolutionCount } = data;
 });
 
 cadenceSensor.on('cadenceData', (data) => {
   latestCadence = data.CalculatedCadence;
-  const { DeviceID, CalculatedCadence, CumulativeCadenceRevolutionCount } = data;
+  // const { DeviceID, CalculatedCadence, CumulativeCadenceRevolutionCount } = data;
+});
+
+powerSensor.on('powerData', (data) => {
+  if (!latestPower && !data.Power) {
+    // two consecutive non-power data points:
+    return;
+  }
+  latestPower = data.Power;
+  if (currentGame) {
+    createEntries(currentGame, latestSpeed, latestCadence, latestPower);
+  }
+
+  const { DeviceID, Power } = data;
   sockets.forEach(s => s.send(JSON.stringify({
-    type: 'ant-cadence',
+    type: 'ant:power',
     data: {
-      DeviceID, CalculatedCadence, CumulativeCadenceRevolutionCount,
+      DeviceID, Power,
     },
   })));
 });
-
-if (powerSensor) {
-  powerSensor.on('powerData', (data) => {
-    latestPower = data.Power;
-    const { DeviceID, Power } = data;
-    sockets.forEach(s => s.send(JSON.stringify({
-      type: 'ant-power',
-      data: {
-        DeviceID, Power,
-      },
-    })));
-  });
-}
 
 const server = http.createServer((req, res) => {
   try {
@@ -139,4 +138,4 @@ const server = http.createServer((req, res) => {
 
 server.listen(REST_PORT);
 
-console.log(`REST listening on: ${REST_PORT}\nWebSocket Server listening on: ${WSS_PORT}`);
+console.log(`rest:listening on ${REST_PORT}\nsocket:listening on ${WSS_PORT}`);

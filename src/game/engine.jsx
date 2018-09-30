@@ -9,36 +9,29 @@ import Settings from './settings';
 import CountDown from './count-down';
 import GameOver from './game-over';
 import HUD from './hud';
+import Velocity from './velocity';
 
 import './engine.css';
 
 let id = 0;
 
 class Engine extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { canvasId: `game${id += 1}` };
-    props.registerListener(result => this.socketData(result));
-    this.onStarted = props.onStarted;
-    this.onEnded = props.onEnded;
+  constructor({ socket }) {
+    super();
+    this.eventListener = this.bounceChopper.bind(this);
+    socket.on('ant:power', this.eventListener);
+    this.state = { socket, canvasId: `game${id += 1}` };
     this.lastRevCount = 0;
   }
 
-  socketData(result) {
-    if (result.type === 'ant-power' && this.chopper) {
-      if (!result.data.Power) {
-        return;
-      }
-      this.chopper.bounce(result.data.Power);
+  bounceChopper({ data: { Power } }) {
+    if (this.chopper && Power) {
+      this.chopper.bounce(Power);
     }
   }
 
-  socketSend(data) {
-    return this.socket.send(JSON.stringify(data));
-  }
-
   init() {
-    const { canvasId } = this.state;
+    const { canvasId, socket } = this.state;
     this.isInitialized = true;
 
     const loader = new ex.Loader();
@@ -58,17 +51,15 @@ class Engine extends React.Component {
       const chopper = new Chopper(engine);
       const countDown = new CountDown(engine, chopper);
       const hud = new HUD(engine, chopper);
-      countDown.go = () => {
-        this.onStarted();
-      };
       const gameOver = new GameOver(engine, chopper);
-      gameOver.go = () => {
-        this.onEnded(hud.maxScore);
-      };
+      const velocity = new Velocity(engine, chopper);
+      countDown.go = () => socket.send({ type: 'game:started', data: {} });
+      gameOver.go = () => socket.send({ type: 'game:ended', data: { score: hud.maxScore } });
       this.chopper = chopper;
       engine.add(chopper);
       engine.add(countDown);
       engine.add(gameOver);
+      engine.add(velocity);
       engine.add(new Cloud(800, 0));
       engine.add(new Cloud(400, 300 * Settings.scale.y));
       engine.add(new Cloud(700, 700 * Settings.scale.y));
