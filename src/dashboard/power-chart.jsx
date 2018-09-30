@@ -137,9 +137,7 @@ const settings = {
       layers: {
         curve: 'monotone',
         line: {
-          strokeDasharray: v => (v.datum.id.value === '21f25745-d611-477a-8c31-654feca511e5' ? '' : '1'),
-          strokeWidth: 5,
-          opacity: v => (v.datum.id.value === '21f25745-d611-477a-8c31-654feca511e58' ? 1 : 0.3),
+          strokeWidth: 2,
           stroke: {
             scale: 'color',
             ref: 'id',
@@ -151,6 +149,20 @@ const settings = {
         major: { scale: 'x' },
         layerId: { ref: 'run' },
       },
+    },
+    brush: {
+      consume: [{
+        context: 'highlight',
+        style: {
+          active: {
+            opacity: 1,
+          },
+          inactive: {
+            opacity: 0.3,
+            strokeDasharray: '2',
+          },
+        },
+      }],
     },
   }, {
     type: 'legend-cat',
@@ -170,83 +182,17 @@ const settings = {
         },
       },
     },
-  }, {
-    type: 'point',
-    key: 'points',
-    data: {
-      extract: {
-        field: 'qDimensionInfo/1',
-        // value: v => v.qElemNumber,
-        props: {
-          major: { field: 'qDimensionInfo/0', value: v => v.qNum },
-          minor: { field: 'qMeasureInfo/0' },
-        },
-      },
-    },
-    settings: {
-      x: { ref: 'major', scale: 'x' },
-      y: { ref: 'minor', scale: 'y' },
-      size: 0.25,
-      fill: '#fff',
-      stroke: 'rgba(50, 50, 50, 0.8)',
-      strokeWidth: 4,
-      opacity: 0,
-    },
-    brush: {
-      consume: [{
-        context: 'highlight',
-        style: {
-          active: {
-            opacity: 1,
-          },
-        },
-      }],
-    },
-  }],
-  interactions: [{
-    type: 'native',
-    events: {
-      mousemove: debounce(function mm(e) {
-        const bounds = this.chart.element.getBoundingClientRect();
-        // todo - calculate distance between two points, use that as width
-        const width = 20;
-        const p = {
-          x: e.clientX - bounds.left - width / 2,
-          y: 0,
-          width,
-          height: bounds.height,
-        };
-        // console.log(p);
-        const shapes = this.chart.shapesAt(p, {
-          components: [
-            { key: 'points' },
-          ],
-          propagation: 'stop',
-        });
-        this.chart.brushFromShapes(shapes, {
-          components: [{
-            key: 'points',
-            contexts: ['highlight'],
-            data: ['major'],
-            action: 'set',
-          }],
-        });
-      }),
-      mouseleave() {
-        // this.chart.component('tool').emit('hide');
-        this.chart.brush('highlight').clear();
-      },
-    },
   }],
 };
 
 export default class PowerChart extends EnigmaModel {
-  constructor() {
+  constructor({ user }) {
     super({ genericProps });
+    this.state = { user };
   }
 
   async renderPicasso() {
-    const { layout, model } = this.state;
+    const { layout, model, user } = this.state;
     // const field = await this.getField('name');
     // await field.selectValues([{ qText: 'Andrée' }, { qText: 'Johan B' }]);
     const contData = await model.getHyperCubeContinuousData(
@@ -269,12 +215,12 @@ export default class PowerChart extends EnigmaModel {
       key: 'qHyperCube',
       data: layout.qHyperCube,
     }];
-
     this.pic = picasso.chart({
       element: this.container,
       data,
       settings,
     });
+    this.pic.brush('highlight').addValue('qHyperCube/qDimensionInfo/1', user.userid);
   }
 
   render() {

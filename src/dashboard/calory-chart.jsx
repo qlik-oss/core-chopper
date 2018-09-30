@@ -43,6 +43,7 @@ const settings = {
       data: {
         extract: {
           field: 'qDimensionInfo/0',
+          value: v => v.qText,
         },
       },
       padding: 0.2,
@@ -64,7 +65,9 @@ const settings = {
     },
     c: {
       type: 'color',
-      data: { extract: { field: 'qDimensionInfo/0' } },
+      data: {
+        extract: { field: 'qDimensionInfo/0', value: v => v.qText },
+      },
       range: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'].concat(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']),
     },
   },
@@ -103,9 +106,9 @@ const settings = {
     data: {
       extract: {
         field: 'qDimensionInfo/0',
+        value: v => v.qText,
         props: {
           start: 0,
-          name: { field: 'qDimensionInfo/0' },
           end: { field: 'qMeasureInfo/0' },
         },
       },
@@ -114,11 +117,25 @@ const settings = {
       major: { scale: 'x' },
       minor: { scale: 'y' },
       box: {
-        fill: { scale: 'c', ref: 'name' },
-        opacity: v => (v.datum.label === '21f25745-d611-477a-8c31-654feca511e5' ? 1 : 0.3),
+        fill: { scale: 'c' },
       },
     },
+    brush: {
+      consume: [{
+        context: 'highlight',
+        style: {
+          active: {
+            opacity: 1,
+            stroke: 'rgba(0, 0, 0, 0.7)',
+          },
+          inactive: {
+            opacity: 0.1,
+          },
+        },
+      }],
+    },
   }, {
+    key: 'bar-labels',
     type: 'labels',
     settings: {
       sources: [{
@@ -147,12 +164,13 @@ const settings = {
 };
 
 export default class CaloryChart extends EnigmaModel {
-  constructor() {
+  constructor({ user }) {
     super({ genericProps });
+    this.state = { user };
   }
 
   async renderPicasso() {
-    const { layout } = this.state;
+    const { layout, user } = this.state;
     // const field = await this.getField('name');
     // await field.selectValues([{ qText: 'Andrée' }, { qText: 'Johan B' }]);
 
@@ -166,6 +184,7 @@ export default class CaloryChart extends EnigmaModel {
       data,
       settings,
     });
+    this.pic.brush('highlight').addValue('qHyperCube/qDimensionInfo/0', user.userid);
   }
 
   render() {

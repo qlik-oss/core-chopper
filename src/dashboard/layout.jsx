@@ -25,8 +25,8 @@ export default class Dashboard extends React.Component {
           <HighScore user={user} />
           <HighScore user={user} distinct />
         </div>
-        <CaloryChart />
-        <PowerChart />
+        <CaloryChart user={user} />
+        <PowerChart user={user} />
       </div>
     );
   }
