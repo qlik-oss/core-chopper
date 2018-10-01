@@ -86,7 +86,7 @@ const settings = {
     color: {
       type: 'color',
       data: { extract: { field: 'qDimensionInfo/1', value: v => v.qText.split('::')[2] } },
-      range: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'].concat(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']),
+      range: ['#2a4858', '#ff3900', '#ff6600', '#f01d2d', '#ff0b00', '#e93a06', '#bb99aa', '#da0a2f', '#cf6181', '#7717a9', '#283d6a', '#24247d', '#de405d', '#f79f02', '#ff9300', '#c47e9a', '#cc0d7e', '#ffc000', '#441e92', '#be10be'],
     },
   },
   components: [{
@@ -185,6 +185,19 @@ const settings = {
         },
       },
     },
+    brush: {
+      consume: [{
+        context: 'highlight',
+        style: {
+          active: {
+            opacity: 1,
+          },
+          inactive: {
+            opacity: 0.5,
+          },
+        },
+      }],
+    },
   }],
 };
 
@@ -218,12 +231,42 @@ export default class PowerChart extends EnigmaModel {
       key: 'qHyperCube',
       data: layout.qHyperCube,
     }];
+    const reset = () => {
+      const brush = this.pic.brush('highlight');
+      brush.clear();
+      brush.addValue('qHyperCube/qDimensionInfo/1', user.userid);
+    };
+
     this.pic = picasso.chart({
       element: this.container,
       data,
-      settings,
+      settings: Object.assign({}, settings, {
+        interactions: [{
+          type: 'native',
+          events: {
+            mousemove(e) {
+              const b = this.chart.element.getBoundingClientRect();
+              const p = {
+                x: e.clientX - b.left,
+                y: e.clientY - b.top,
+              };
+              const brush = this.chart.brush('highlight');
+              const shapes = this.chart.shapesAt(p);
+              if (shapes.length) {
+                brush.clear();
+                const values = shapes.map(s => s.data.label.split('::')[2]);
+                brush.addValue('qHyperCube/qDimensionInfo/1', values[0]);
+              }
+            },
+            mouseleave() {
+              reset();
+            },
+          },
+        }],
+      }),
     });
-    this.pic.brush('highlight').addValue('qHyperCube/qDimensionInfo/1', user.userid);
+
+    reset();
   }
 
   render() {

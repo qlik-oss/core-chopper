@@ -67,7 +67,7 @@ const settings = {
       data: {
         extract: { field: 'qDimensionInfo/0', value: v => v.qText },
       },
-      range: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'].concat(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']),
+      range: ['#2a4858', '#ff3900', '#ff6600', '#f01d2d', '#ff0b00', '#e93a06', '#bb99aa', '#da0a2f', '#cf6181', '#7717a9', '#283d6a', '#24247d', '#de405d', '#f79f02', '#ff9300', '#c47e9a', '#cc0d7e', '#ffc000', '#441e92', '#be10be'],
     },
   },
   components: [{
@@ -129,7 +129,7 @@ const settings = {
             strokeWidth: 5,
           },
           inactive: {
-            opacity: 0.6,
+            opacity: 0.3,
           },
         },
       }],
