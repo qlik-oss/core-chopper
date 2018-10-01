@@ -26,9 +26,9 @@ export default class Scan extends React.Component {
     socket.send({
       type: 'user:save',
       data: {
-        userid: '21f25745-d611-477a-8c31-654feca511e5',
-        name: 'Tom',
-        cardid: 'f23eb809',
+        userid: 'test',
+        name: 'Test U',
+        cardid: 'test',
       },
     });
   }
@@ -38,7 +38,7 @@ export default class Scan extends React.Component {
 
     let view = (
       <div className="badge" onClick={() => this.testUser()}>
-        <h2>Scan ID badge to play!</h2>
+        <h2>Scan ID badge to sign in!</h2>
       </div>
     );
     if (user.userid && !user.name) {

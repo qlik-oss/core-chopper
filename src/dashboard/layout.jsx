@@ -21,10 +21,9 @@ export default class Dashboard extends React.Component {
     const { user } = this.state;
     return (
       <div className="dashboard">
-        <div className="top">
-          <HighScore user={user} />
-          <HighScore user={user} distinct />
-        </div>
+        <HighScore user={user} />
+        <div className="go">Scan ID badge to play!</div>
+        <HighScore user={user} distinct />
         <CaloryChart user={user} />
         <PowerChart user={user} />
       </div>

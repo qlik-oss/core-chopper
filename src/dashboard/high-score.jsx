@@ -80,7 +80,7 @@ export default class HighScore extends EnigmaModel {
         );
       });
     return (
-      <div className="high-score">
+      <div className="card high-score">
         <h2>{title}</h2>
         <table>
           <thead>

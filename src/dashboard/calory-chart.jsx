@@ -8,6 +8,9 @@ import './calory-chart.css';
 
 picasso.use(picassoQ);
 
+const TEXT_COLOR = '#333';
+const SECONDARY_COLOR = '#111';
+
 const genericProps = {
   qInfo: {
     qType: 'calories',
@@ -44,17 +47,13 @@ const settings = {
         extract: {
           field: 'qDimensionInfo/0',
           value: v => v.qText,
+          props: {
+            name: { field: 'qDimensionInfo/1', value: v => v.qText },
+          },
         },
       },
+      label: v => v.datum.name.value,
       padding: 0.2,
-    },
-    labels: {
-      data: {
-        extract: {
-          field: 'qDimensionInfo/1',
-        },
-      },
-      padding: 0,
     },
     y: {
       data: {
@@ -78,19 +77,19 @@ const settings = {
     settings: {
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
       },
     },
   }, {
     key: 'x-axis',
     type: 'axis',
-    scale: 'labels',
+    scale: 'x',
     dock: 'bottom',
     settings: {
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
         mode: 'tilted',
         tiltAngle: 35,
@@ -126,10 +125,11 @@ const settings = {
         style: {
           active: {
             opacity: 1,
-            stroke: 'rgba(0, 0, 0, 0.7)',
+            stroke: SECONDARY_COLOR,
+            strokeWidth: 5,
           },
           inactive: {
-            opacity: 0.1,
+            opacity: 0.6,
           },
         },
       }],
@@ -153,7 +153,7 @@ const settings = {
                 return data ? data.end.label : '';
               },
               placements: [
-                { position: 'outside', fill: '#fff' },
+                { position: 'outside', fill: TEXT_COLOR },
               ],
             }],
           },
@@ -195,7 +195,7 @@ export default class CaloryChart extends EnigmaModel {
       setTimeout(() => this.renderPicasso());
     }
     return (
-      <div className="power-wrapper">
+      <div className="card full-width">
         <h2>Most kcal spent</h2>
         <div className="calory-chart" ref={(elem) => { this.container = elem; }}>Loading...</div>
       </div>

@@ -9,6 +9,8 @@ import './power-chart.css';
 picasso.use(picassoQ);
 
 const ROUND_TO_SECONDS = 5;
+const TEXT_COLOR = '#333';
+const SECONDARY_COLOR = '#111';
 
 const genericProps = {
   qInfo: {
@@ -78,7 +80,7 @@ const settings = {
       data: {
         fields: ['qMeasureInfo/0'],
       },
-      expand: 0.05,
+      _expand: 0.05,
       invert: true,
     },
     color: {
@@ -94,7 +96,7 @@ const settings = {
       tight: true,
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
       },
     },
@@ -106,19 +108,19 @@ const settings = {
     settings: {
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
         mode: 'tilted',
         tiltAngle: 35,
+      },
+      line: {
+        show: false,
       },
     },
   }, {
     type: 'grid-line',
     x: { scale: 'x' },
     y: { scale: 'y' },
-    ticks: {
-      stroke: 'rgba(0, 0, 0, 0.1)',
-    },
   }, {
     type: 'line',
     data: {
@@ -155,11 +157,12 @@ const settings = {
         context: 'highlight',
         style: {
           active: {
+            strokeWidth: 5,
             opacity: 1,
           },
           inactive: {
-            opacity: 0.3,
-            strokeDasharray: '2',
+            opacity: 0.5,
+            strokeDasharray: '1',
           },
         },
       }],
@@ -176,7 +179,7 @@ const settings = {
         label: {
           maxWidth: 100,
           fontFamily: 'VT323',
-          fill: '#fff',
+          fill: TEXT_COLOR,
           fontSize: '16px',
           text: t => t.datum.label.split('::')[0],
         },
@@ -231,7 +234,7 @@ export default class PowerChart extends EnigmaModel {
       setTimeout(() => this.renderPicasso());
     }
     return (
-      <div className="power-wrapper">
+      <div className="card full-width">
         <h2>Power over time</h2>
         <div className="power-chart" ref={(elem) => { this.container = elem; }}>Loading...</div>
       </div>

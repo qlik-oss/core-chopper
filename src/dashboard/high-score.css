@@ -11,8 +11,7 @@
 }
 
 .high-score .me {
-  background-color: rgba(0, 0, 0, 0.2);
-  color: gold;
+  background-color: gold;
 }
 
 .high-score table tr > :last-child {

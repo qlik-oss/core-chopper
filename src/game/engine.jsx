@@ -9,7 +9,6 @@ import Settings from './settings';
 import CountDown from './count-down';
 import GameOver from './game-over';
 import HUD from './hud';
-import Velocity from './velocity';
 
 import './engine.css';
 
@@ -52,14 +51,12 @@ class Engine extends React.Component {
       const countDown = new CountDown(engine, chopper);
       const hud = new HUD(engine, chopper);
       const gameOver = new GameOver(engine, chopper);
-      const velocity = new Velocity(engine, chopper);
       countDown.go = () => socket.send({ type: 'game:started', data: {} });
       gameOver.go = () => socket.send({ type: 'game:ended', data: { score: hud.maxScore } });
       this.chopper = chopper;
       engine.add(chopper);
       engine.add(countDown);
       engine.add(gameOver);
-      engine.add(velocity);
       engine.add(new Cloud(800, 0));
       engine.add(new Cloud(400, 300 * Settings.scale.y));
       engine.add(new Cloud(700, 700 * Settings.scale.y));
