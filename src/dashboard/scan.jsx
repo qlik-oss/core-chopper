@@ -33,15 +33,24 @@ export default class Scan extends React.Component {
     });
   }
 
+  testUserScanned() {
+    const { socket, user } = this.state;
+    socket.receive(JSON.stringify({
+      type: 'user:scanned',
+      data: user,
+    }));
+  }
+
   render() {
     const { user } = this.state;
 
-    let view = (
-      <div className="badge" onClick={() => this.testUser()}>
-        <h2>Scan ID badge to sign in!</h2>
-      </div>
-    );
-    if (user.userid && !user.name) {
+    let view;
+
+    if (!user || !user.userid) {
+      view = (
+        <h2 onClick={() => this.testUser()}>Scan ID badge to sign in!</h2>
+      );
+    } else if (user.userid && !user.name) {
       view = (
         <div className="name">
           <p>
@@ -50,6 +59,15 @@ Please fill in your name:
           </p>
           <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
         </div>
+      );
+    } else {
+      view = (
+        <h2 onClick={() => this.testUserScanned()}>
+Welcome,
+          {' '}
+          <strong>{user.name}</strong>
+! Scan your ID badge again to play!
+        </h2>
       );
     }
     return (<div className="scan">{view}</div>);

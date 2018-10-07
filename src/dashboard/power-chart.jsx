@@ -207,8 +207,12 @@ export default class PowerChart extends EnigmaModel {
     this.state = { user };
   }
 
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
+  }
+
   async renderPicasso() {
-    const { layout, model, user } = this.state;
+    const { layout, model } = this.state;
     // const field = await this.getField('name');
     // await field.selectValues([{ qText: 'Andrée' }, { qText: 'Johan B' }]);
     const contData = await model.getHyperCubeContinuousData(
@@ -231,10 +235,16 @@ export default class PowerChart extends EnigmaModel {
       key: 'qHyperCube',
       data: layout.qHyperCube,
     }];
-    const reset = () => {
+
+    this.resetChart = () => {
+      const { user } = this.state;
       const brush = this.pic.brush('highlight');
       brush.clear();
-      brush.addValue('qHyperCube/qDimensionInfo/1', user.userid);
+      if (user.userid) {
+        brush.addValue('qHyperCube/qDimensionInfo/1', user.userid);
+      } else {
+        brush.end();
+      }
     };
 
     this.pic = picasso.chart({
@@ -258,15 +268,13 @@ export default class PowerChart extends EnigmaModel {
                 brush.addValue('qHyperCube/qDimensionInfo/1', values[0]);
               }
             },
-            mouseleave() {
-              reset();
-            },
+            mouseleave: () => this.resetChart(),
           },
         }],
       }),
     });
 
-    reset();
+    this.resetChart();
   }
 
   render() {
@@ -275,6 +283,9 @@ export default class PowerChart extends EnigmaModel {
     if (layout && this.container && !this.pic) {
       // we need to have the `this.container` reference available when rendering:
       setTimeout(() => this.renderPicasso());
+    }
+    if (this.resetChart) {
+      this.resetChart();
     }
     return (
       <div className="card full-width">

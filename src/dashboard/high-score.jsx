@@ -58,6 +58,10 @@ export default class HighScore extends EnigmaModel {
     this.state = { user, distinct };
   }
 
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
+  }
+
   render() {
     const { user, layout, distinct } = this.state;
     if (!layout) {

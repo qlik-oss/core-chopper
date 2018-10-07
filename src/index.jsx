@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom';
 
 import Socket from './socket';
 import Header from './header';
-import Scan from './login/scan';
 import Dashboard from './dashboard/layout';
 import Engine from './game/engine';
 
@@ -21,7 +20,14 @@ class Index extends React.Component {
     super();
     const socket = new Socket();
     this.updatedListener = user => this.setState({ user });
-    this.scannedListener = () => this.setState({ isStarted: true });
+    this.scannedListener = (scannedUser) => {
+      const { user } = this.state;
+      if (scannedUser.userid === user.userid) {
+        this.setState({ isStarted: true });
+      } else {
+        this.setState({ user: scannedUser });
+      }
+    };
     socket.on('user:updated', this.updatedListener);
     socket.on('user:scanned', this.scannedListener);
     this.state = { user: {}, socket };
@@ -36,29 +42,18 @@ class Index extends React.Component {
   render() {
     const { user, socket, isStarted } = this.state;
     let view;
-    if (!user.userid || !user.name) {
-      view = (<Scan user={user} socket={socket} />);
-    } else if (!isStarted) {
+    if (!isStarted) {
       view = (
-        <Dashboard user={user} />
+        <Dashboard user={user} socket={socket} />
       );
     } else {
       view = (
         <Engine user={user} socket={socket} />
       );
     }
-    // todo: fix this.setState({ user: { userid: null, name: null } })
-    // need to tear down the game engine instance somehow
-    /* eslint no-restricted-globals:0 */
-    //
     return (
       <div className="index">
-        <Header
-          showBack={user}
-          showPlay={user && !isStarted}
-          onStart={() => this.setState({ isStarted: true })}
-          onClose={() => location.reload()}
-        />
+        <Header user={user} />
         {view}
       </div>
     );

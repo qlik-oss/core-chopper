@@ -169,8 +169,12 @@ export default class CaloryChart extends EnigmaModel {
     this.state = { user };
   }
 
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
+  }
+
   async renderPicasso() {
-    const { layout, user } = this.state;
+    const { layout } = this.state;
     // const field = await this.getField('name');
     // await field.selectValues([{ qText: 'Andrée' }, { qText: 'Johan B' }]);
 
@@ -179,12 +183,25 @@ export default class CaloryChart extends EnigmaModel {
       key: 'qHyperCube',
       data: layout.qHyperCube,
     }];
+
+    this.resetChart = () => {
+      const { user } = this.state;
+      const brush = this.pic.brush('highlight');
+      brush.clear();
+      if (user.userid) {
+        brush.addValue('qHyperCube/qDimensionInfo/0', user.userid);
+      } else {
+        brush.end();
+      }
+    };
+
     this.pic = picasso.chart({
       element: this.container,
       data,
       settings,
     });
-    this.pic.brush('highlight').addValue('qHyperCube/qDimensionInfo/0', user.userid);
+
+    this.resetChart();
   }
 
   render() {
@@ -193,6 +210,9 @@ export default class CaloryChart extends EnigmaModel {
     if (layout && this.container && !this.pic) {
       // we need to have the `this.container` reference available when rendering:
       setTimeout(() => this.renderPicasso());
+    }
+    if (this.resetChart) {
+      this.resetChart();
     }
     return (
       <div className="card full-width">

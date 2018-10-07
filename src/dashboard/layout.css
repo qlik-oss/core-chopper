@@ -3,16 +3,3 @@
   flex-wrap: wrap;
   justify-content: space-between;
 }
-
-.dashboard .card {
-  width: 20%;
-}
-
-.dashboard .go {
-  width: 50%;
-  font-size: 6rem;
-  display: flex;
-  align-items: center;
-  justify-items: center;
-  text-align: center;
-}

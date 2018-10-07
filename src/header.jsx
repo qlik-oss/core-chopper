@@ -5,23 +5,23 @@ import logo from './resources/qlik-core.svg';
 import './header.css';
 
 export default class Header extends React.Component {
-  constructor(props) {
+  constructor({ user }) {
     super();
-    this.onClose = props.onClose;
-    this.onStart = props.onStart;
-    this.state = {};
+    this.state = { user };
   }
 
-  componentWillReceiveProps({ showBack, showPlay }) {
-    this.setState({ showBack, showPlay });
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
   }
 
+  // todo: fix this.setState({ user: { userid: null, name: null } })
+  // need to tear down the game engine instance somehow
+  /* eslint no-restricted-globals:0 */
   render() {
-    const { showBack, showPlay } = this.state;
+    const { user } = this.state;
     const right = (
       <div className="right">
-        {showBack && (<span onClick={() => this.onClose()}>Back to main screen</span>)}
-        {showPlay && (<span onClick={() => this.onStart()}>Start game</span>)}
+        {user.userid ? <span onClick={() => location.reload()}>Sign out</span> : ''}
       </div>
     );
     return (
