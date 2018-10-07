@@ -65,7 +65,7 @@ export default class HighScore extends EnigmaModel {
   render() {
     const { user, layout, distinct } = this.state;
     if (!layout) {
-      return (<p>Loading...</p>);
+      return (<div className="card"><p>Loading...</p></div>);
     }
     const title = distinct ? 'Personal bests' : 'High scores';
     const matrix = layout.qHyperCube.qDataPages[0].qMatrix;
