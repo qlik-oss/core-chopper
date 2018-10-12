@@ -61,19 +61,13 @@ nfc.on('reader', (reader) => {
   console.log('reader:attached');
   reader.on('card', (card) => {
     const user = getOrCreateUser(card.uid);
-    if (currentUser && currentUser.userid === user.userid) {
-      sockets.forEach(s => s.send(JSON.stringify({
-        type: 'user:scanned',
-        data: {},
-      })));
-    } else {
-      currentUser = user;
-      console.log('reader:scanned', user);
-      sockets.forEach(s => s.send(JSON.stringify({
-        type: 'user:updated',
-        data: user,
-      })));
-    }
+    const evt = currentUser && currentUser.userid === user.userid ? 'user:scanned' : 'user:updated';
+    currentUser = user;
+    console.log('reader:scanned', user);
+    sockets.forEach(s => s.send(JSON.stringify({
+      type: evt,
+      data: user,
+    })));
   });
   reader.on('error', (err) => {
     console.error('reader:error ', err);

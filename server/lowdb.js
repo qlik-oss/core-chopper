@@ -20,12 +20,16 @@ const gamedb = new Lowdb('games', { games: [] });
 const entrydb = new Lowdb('entries', { entries: [] });
 
 function getOrCreateUser(cardid) {
-  const player = { userid: shortid.generate(), cardid: cardid || shortid.generate(), name: 'Test user' };
+  const player = {
+    userid: shortid.generate(),
+    cardid: cardid || shortid.generate(),
+    name: 'Test user',
+  };
   let result = playerdb.get('players').find({ cardid }).value();
   if (!result) {
     result = playerdb.get('players').push(player).write();
   }
-  return player;
+  return result;
 }
 
 function createEntries(currentGame, latestSpeed, latestCadence, latestPower) {

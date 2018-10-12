@@ -23,7 +23,7 @@ class Engine extends React.Component {
     this.lastRevCount = 0;
   }
 
-  bounceChopper({ data: { Power } }) {
+  bounceChopper({ Power }) {
     if (this.chopper && Power) {
       this.chopper.bounce(Power);
     }

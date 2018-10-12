@@ -59,7 +59,7 @@ const settings = {
       data: {
         field: 'qMeasureInfo/0',
       },
-      expand: 0.25,
+      expand: 0.35,
       invert: true,
     },
     c: {
