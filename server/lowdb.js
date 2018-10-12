@@ -23,11 +23,12 @@ function getOrCreateUser(cardid) {
   const player = {
     userid: shortid.generate(),
     cardid: cardid || shortid.generate(),
-    name: 'Test user',
+    name: '',
   };
   let result = playerdb.get('players').find({ cardid }).value();
   if (!result) {
-    result = playerdb.get('players').push(player).write();
+    playerdb.get('players').push(player).write();
+    result = player;
   }
   return result;
 }
