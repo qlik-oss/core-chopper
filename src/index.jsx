@@ -30,7 +30,7 @@ class Index extends React.Component {
     };
     socket.on('user:updated', this.updatedListener);
     socket.on('user:scanned', this.scannedListener);
-    this.state = { user: {}, socket };
+    this.state = { user: {}, socket, mode: '' };
   }
 
   componentWillUnmount() {
@@ -39,17 +39,45 @@ class Index extends React.Component {
     socket.off('user:scanned', this.scannedListener);
   }
 
+  setMode(mode) {
+    this.setState({ mode });
+  }
+
   render() {
-    const { user, socket, isStarted } = this.state;
+    const { user, socket, isStarted, mode } = this.state;
     let view;
+
+    function foo () {
+      if (mode === 'classic') {
+        return <Engine user={user} socket={socket} />
+      } else if ( mode === 'challenge' ) {
+        return 'cha'
+      }
+    }
+
     if (!isStarted) {
       view = (
         <Dashboard user={user} socket={socket} />
       );
     } else {
-      view = (
-        <Engine user={user} socket={socket} />
-      );
+
+      if ( !mode) {
+        view = (
+          // <Engine user={user} socket={socket} />
+
+          <div className='gameModes'>
+            <div>Select game mode!</div>
+            <div className='modes'>
+              <div className='mode' onClick={() => this.setMode('classic')}>classic</div>
+              <div className='mode' onClick={() => this.setMode('challenge')}>challenge</div>
+            </div>
+          </div>
+        );
+      } else {
+        view = (
+          <Engine user={user} socket={socket} mode={mode}/>
+        )
+      }
     }
     return (
       <div className="index">
