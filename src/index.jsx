@@ -60,11 +60,8 @@ class Index extends React.Component {
         <Dashboard user={user} socket={socket} />
       );
     } else {
-
       if ( !mode) {
         view = (
-          // <Engine user={user} socket={socket} />
-
           <div className='gameModes'>
             <div>Select game mode!</div>
             <div className='modes'>
