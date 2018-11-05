@@ -7,17 +7,12 @@ module.exports = function create(port, onMessage, onClose) {
   socket.on('connection', (ws) => {
     sockets.push(ws);
     ws.on('message', onMessage);
-    /* ws.on('send', (message) => {
-      console.log('sent: %s', message);
-    });
-
-    ws.on('message', (message) => {
-      console.log('received: %s', message);
-    }); */
-
+    const { send } = ws;
+    ws.send = (message) => { console.log('socket:send', message); send.call(ws, message); };
     ws.on('close', () => {
       const idx = sockets.indexOf(ws);
       sockets.splice(idx, 1);
+      onClose();
     });
   });
 

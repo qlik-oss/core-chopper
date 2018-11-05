@@ -1,8 +1,17 @@
+.high-score table {
+  border-collapse: collapse;
+}
+
 .high-score table th,
 .high-score table td {
   width: 33%;
   text-align: left;
   line-height: 0.6;
+  padding: 3px 6px;
+}
+
+.high-score .me {
+  background-color: gold;
 }
 
 .high-score table tr > :last-child {

@@ -3,51 +3,55 @@ import React from 'react';
 import './scan.css';
 
 export default class Scan extends React.Component {
-  constructor(props) {
+  constructor({ user, socket }) {
     super();
-    this.state = { user: props.user, useScanner: true };
-    this.done = props.onDone;
+    this.state = { user, socket };
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ user: nextProps.user });
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
   }
 
   manualInput(evt) {
-    const { user } = this.state;
+    const { user, socket } = this.state;
     user.name = evt.target.value.trim();
-    if (!user.userid) {
-      user.userid = user.name;
-      user.cardid = null;
-    }
-    if (user.name !== '' && evt.key === 'Enter') {
-      // close view
-      this.done(user);
+    if (user.userid && user.name !== '' && evt.key === 'Enter') {
+      // save it:
+      socket.send({ type: 'user:save', data: user });
     }
   }
 
+  testUser() {
+    const { socket } = this.state;
+    socket.send({
+      type: 'user:save',
+      data: {
+        userid: 'test',
+        name: 'Test U',
+        cardid: 'test',
+      },
+    });
+  }
+
+  testUserScanned() {
+    const { socket, user } = this.state;
+    socket.receive(JSON.stringify({
+      type: 'user:scanned',
+      data: user,
+    }));
+  }
+
   render() {
-    const { user, useScanner } = this.state;
-    const manual = (
-      <div className="name">
-        <p>
-Write your name:
-          {' '}
-          <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
-        </p>
-      </div>
-    );
-    const scanner = (
-      <div className="scan">
-        <div className="badge" onClick={() => this.setState({ useScanner: !useScanner })}>
-          <h2>Scan ID badge to play!</h2>
-        </div>
-      </div>
-    );
-    if (!user.userid) {
-      return useScanner ? scanner : manual;
-    } if (!user.name) {
-      return (
+    const { user } = this.state;
+
+    let view;
+
+    if (!user || !user.userid) {
+      view = (
+        <h2 onClick={() => this.testUser()}>Scan ID badge to sign in!</h2>
+      );
+    } else if (user.userid && !user.name) {
+      view = (
         <div className="name">
           <p>
 Looks like this is your first time riding the chopper!
@@ -56,7 +60,16 @@ Please fill in your name:
           <input autoFocus onKeyUp={evt => this.manualInput(evt)} />
         </div>
       );
+    } else {
+      view = (
+        <h2 onClick={() => this.testUserScanned()}>
+Welcome,
+          {' '}
+          <strong>{user.name}</strong>
+! Scan your ID badge again to play!
+        </h2>
+      );
     }
-    return (<p>None</p>);
+    return (<div className="scan">{view}</div>);
   }
 }

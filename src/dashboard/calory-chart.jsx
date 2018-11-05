@@ -8,13 +8,17 @@ import './calory-chart.css';
 
 picasso.use(picassoQ);
 
+const TEXT_COLOR = '#333';
+const SECONDARY_COLOR = '#111';
+
 const genericProps = {
   qInfo: {
     qType: 'calories',
   },
   qHyperCubeDef: {
     qDimensions: [
-      { qDef: { qFieldDefs: ['=[name]&\'::\'&[userid]'] } },
+      { qDef: { qFieldDefs: ['[userid]'] } },
+      { qDef: { qFieldDefs: ['[name]'] } },
     ],
     qMeasures: [
       // Average watt/hour (power) * hours bicycled * 3.6 = kcal burnt
@@ -27,10 +31,10 @@ const genericProps = {
       },
     ],
     qInitialDataFetch: [{
-      qWidth: 2,
-      qHeight: 5000,
+      qWidth: 3,
+      qHeight: 3333,
     }],
-    qInterColumnSortOrder: [1, 0],
+    qInterColumnSortOrder: [2, 1, 0],
     qSuppressMissing: true,
     qSuppressZero: true,
   },
@@ -42,22 +46,28 @@ const settings = {
       data: {
         extract: {
           field: 'qDimensionInfo/0',
-          label: v => v.qText.split('::')[0],
+          value: v => v.qText,
+          props: {
+            name: { field: 'qDimensionInfo/1', value: v => v.qText },
+          },
         },
       },
-      padding: 0,
+      label: v => v.datum.name.value,
+      padding: 0.2,
     },
     y: {
       data: {
         field: 'qMeasureInfo/0',
       },
-      expand: 0.25,
+      expand: 0.35,
       invert: true,
     },
     c: {
       type: 'color',
-      data: { extract: { field: 'qDimensionInfo/0' } },
-      range: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'].concat(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']),
+      data: {
+        extract: { field: 'qDimensionInfo/0', value: v => v.qText },
+      },
+      range: ['#2a4858', '#ff3900', '#ff6600', '#f01d2d', '#ff0b00', '#e93a06', '#bb99aa', '#da0a2f', '#cf6181', '#7717a9', '#283d6a', '#24247d', '#de405d', '#f79f02', '#ff9300', '#c47e9a', '#cc0d7e', '#ffc000', '#441e92', '#be10be'],
     },
   },
   components: [{
@@ -67,7 +77,7 @@ const settings = {
     settings: {
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
       },
     },
@@ -79,7 +89,7 @@ const settings = {
     settings: {
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
         mode: 'tilted',
         tiltAngle: 35,
@@ -95,9 +105,9 @@ const settings = {
     data: {
       extract: {
         field: 'qDimensionInfo/0',
+        value: v => v.qText,
         props: {
           start: 0,
-          name: { field: 'qDimensionInfo/0' },
           end: { field: 'qMeasureInfo/0' },
         },
       },
@@ -106,10 +116,26 @@ const settings = {
       major: { scale: 'x' },
       minor: { scale: 'y' },
       box: {
-        fill: { scale: 'c', ref: 'name' },
+        fill: { scale: 'c' },
       },
     },
+    brush: {
+      consume: [{
+        context: 'highlight',
+        style: {
+          active: {
+            opacity: 1,
+            stroke: SECONDARY_COLOR,
+            strokeWidth: 5,
+          },
+          inactive: {
+            opacity: 0.3,
+          },
+        },
+      }],
+    },
   }, {
+    key: 'bar-labels',
     type: 'labels',
     settings: {
       sources: [{
@@ -127,7 +153,7 @@ const settings = {
                 return data ? data.end.label : '';
               },
               placements: [
-                { position: 'outside', fill: '#fff' },
+                { position: 'outside', fill: TEXT_COLOR },
               ],
             }],
           },
@@ -138,8 +164,13 @@ const settings = {
 };
 
 export default class CaloryChart extends EnigmaModel {
-  constructor() {
+  constructor({ user }) {
     super({ genericProps });
+    this.state = { user };
+  }
+
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
   }
 
   async renderPicasso() {
@@ -152,11 +183,25 @@ export default class CaloryChart extends EnigmaModel {
       key: 'qHyperCube',
       data: layout.qHyperCube,
     }];
+
+    this.resetChart = () => {
+      const { user } = this.state;
+      const brush = this.pic.brush('highlight');
+      brush.clear();
+      if (user.userid) {
+        brush.addValue('qHyperCube/qDimensionInfo/0', user.userid);
+      } else {
+        brush.end();
+      }
+    };
+
     this.pic = picasso.chart({
       element: this.container,
       data,
       settings,
     });
+
+    this.resetChart();
   }
 
   render() {
@@ -166,8 +211,11 @@ export default class CaloryChart extends EnigmaModel {
       // we need to have the `this.container` reference available when rendering:
       setTimeout(() => this.renderPicasso());
     }
+    if (this.resetChart) {
+      this.resetChart();
+    }
     return (
-      <div className="power-wrapper">
+      <div className="card full-width">
         <h2>Most kcal spent</h2>
         <div className="calory-chart" ref={(elem) => { this.container = elem; }}>Loading...</div>
       </div>

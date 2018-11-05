@@ -9,6 +9,8 @@ import './power-chart.css';
 picasso.use(picassoQ);
 
 const ROUND_TO_SECONDS = 5;
+const TEXT_COLOR = '#333';
+const SECONDARY_COLOR = '#111';
 
 const genericProps = {
   qInfo: {
@@ -78,13 +80,13 @@ const settings = {
       data: {
         fields: ['qMeasureInfo/0'],
       },
-      expand: 0.05,
+      _expand: 0.05,
       invert: true,
     },
     color: {
       type: 'color',
       data: { extract: { field: 'qDimensionInfo/1', value: v => v.qText.split('::')[2] } },
-      range: ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'].concat(['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd']),
+      range: ['#2a4858', '#ff3900', '#ff6600', '#f01d2d', '#ff0b00', '#e93a06', '#bb99aa', '#da0a2f', '#cf6181', '#7717a9', '#283d6a', '#24247d', '#de405d', '#f79f02', '#ff9300', '#c47e9a', '#cc0d7e', '#ffc000', '#441e92', '#be10be'],
     },
   },
   components: [{
@@ -94,7 +96,7 @@ const settings = {
       tight: true,
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
       },
     },
@@ -106,19 +108,19 @@ const settings = {
     settings: {
       labels: {
         fontFamily: 'VT323',
-        fill: '#fff',
+        fill: TEXT_COLOR,
         fontSize: '18px',
         mode: 'tilted',
         tiltAngle: 35,
+      },
+      line: {
+        show: false,
       },
     },
   }, {
     type: 'grid-line',
     x: { scale: 'x' },
     y: { scale: 'y' },
-    ticks: {
-      stroke: 'rgba(0, 0, 0, 0.1)',
-    },
   }, {
     type: 'line',
     data: {
@@ -137,7 +139,7 @@ const settings = {
       layers: {
         curve: 'monotone',
         line: {
-          strokeWidth: 5,
+          strokeWidth: 2,
           stroke: {
             scale: 'color',
             ref: 'id',
@@ -149,6 +151,21 @@ const settings = {
         major: { scale: 'x' },
         layerId: { ref: 'run' },
       },
+    },
+    brush: {
+      consume: [{
+        context: 'highlight',
+        style: {
+          active: {
+            strokeWidth: 5,
+            opacity: 1,
+          },
+          inactive: {
+            opacity: 0.5,
+            strokeDasharray: '1',
+          },
+        },
+      }],
     },
   }, {
     type: 'legend-cat',
@@ -162,33 +179,11 @@ const settings = {
         label: {
           maxWidth: 100,
           fontFamily: 'VT323',
-          fill: '#fff',
+          fill: TEXT_COLOR,
           fontSize: '16px',
           text: t => t.datum.label.split('::')[0],
         },
       },
-    },
-  }, {
-    type: 'point',
-    key: 'points',
-    data: {
-      extract: {
-        field: 'qDimensionInfo/1',
-        // value: v => v.qElemNumber,
-        props: {
-          major: { field: 'qDimensionInfo/0', value: v => v.qNum },
-          minor: { field: 'qMeasureInfo/0' },
-        },
-      },
-    },
-    settings: {
-      x: { ref: 'major', scale: 'x' },
-      y: { ref: 'minor', scale: 'y' },
-      size: 0.25,
-      fill: '#fff',
-      stroke: 'rgba(50, 50, 50, 0.8)',
-      strokeWidth: 4,
-      opacity: 0,
     },
     brush: {
       consume: [{
@@ -197,50 +192,23 @@ const settings = {
           active: {
             opacity: 1,
           },
+          inactive: {
+            opacity: 0.5,
+          },
         },
       }],
-    },
-  }],
-  interactions: [{
-    type: 'native',
-    events: {
-      mousemove: debounce(function mm(e) {
-        const bounds = this.chart.element.getBoundingClientRect();
-        // todo - calculate distance between two points, use that as width
-        const width = 20;
-        const p = {
-          x: e.clientX - bounds.left - width / 2,
-          y: 0,
-          width,
-          height: bounds.height,
-        };
-        // console.log(p);
-        const shapes = this.chart.shapesAt(p, {
-          components: [
-            { key: 'points' },
-          ],
-          propagation: 'stop',
-        });
-        this.chart.brushFromShapes(shapes, {
-          components: [{
-            key: 'points',
-            contexts: ['highlight'],
-            data: ['major'],
-            action: 'set',
-          }],
-        });
-      }),
-      mouseleave() {
-        // this.chart.component('tool').emit('hide');
-        this.chart.brush('highlight').clear();
-      },
     },
   }],
 };
 
 export default class PowerChart extends EnigmaModel {
-  constructor() {
+  constructor({ user }) {
     super({ genericProps });
+    this.state = { user };
+  }
+
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
   }
 
   async renderPicasso() {
@@ -268,11 +236,45 @@ export default class PowerChart extends EnigmaModel {
       data: layout.qHyperCube,
     }];
 
+    this.resetChart = () => {
+      const { user } = this.state;
+      const brush = this.pic.brush('highlight');
+      brush.clear();
+      if (user.userid) {
+        brush.addValue('qHyperCube/qDimensionInfo/1', user.userid);
+      } else {
+        brush.end();
+      }
+    };
+
     this.pic = picasso.chart({
       element: this.container,
       data,
-      settings,
+      settings: Object.assign({}, settings, {
+        interactions: [{
+          type: 'native',
+          events: {
+            mousemove(e) {
+              const b = this.chart.element.getBoundingClientRect();
+              const p = {
+                x: e.clientX - b.left,
+                y: e.clientY - b.top,
+              };
+              const brush = this.chart.brush('highlight');
+              const shapes = this.chart.shapesAt(p);
+              if (shapes.length) {
+                brush.clear();
+                const values = shapes.map(s => s.data.label.split('::')[2]);
+                brush.addValue('qHyperCube/qDimensionInfo/1', values[0]);
+              }
+            },
+            mouseleave: () => this.resetChart(),
+          },
+        }],
+      }),
     });
+
+    this.resetChart();
   }
 
   render() {
@@ -282,8 +284,11 @@ export default class PowerChart extends EnigmaModel {
       // we need to have the `this.container` reference available when rendering:
       setTimeout(() => this.renderPicasso());
     }
+    if (this.resetChart) {
+      this.resetChart();
+    }
     return (
-      <div className="power-wrapper">
+      <div className="card full-width">
         <h2>Power over time</h2>
         <div className="power-chart" ref={(elem) => { this.container = elem; }}>Loading...</div>
       </div>

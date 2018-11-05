@@ -1,12 +1,5 @@
 .dashboard {
-  padding: 1rem 2rem;
-}
-
-.dashboard .top {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-}
-
-.dashboard .top > div {
-  width: 25%;
 }

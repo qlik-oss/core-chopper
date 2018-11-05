@@ -1,16 +1,11 @@
+/* eslint no-console: 0 */
+
 const Ant = require('aai-ant-plus');
 
 const stick = new Ant.GarminStick3();
-
-let speedSensor;
-let cadenceSensor;
-let powerSensor;
-
-speedSensor = new Ant.SpeedSensor(stick);
-cadenceSensor = new Ant.CadenceSensor(stick);
-/* speedSensor = new Ant.SpeedCadenceSensor(stick);
-cadenceSensor = speedSensor; */
-powerSensor = new Ant.BicyclePowerSensor(stick);
+const speedSensor = new Ant.SpeedSensor(stick);
+const cadenceSensor = new Ant.CadenceSensor(stick);
+const powerSensor = new Ant.BicyclePowerSensor(stick);
 
 // in meters, circumference (e.g. 28"*3,14*0.39=circumference in cm):
 speedSensor.setWheelCircumference(2.23);
@@ -22,7 +17,7 @@ stick.on('startup', () => {
 });
 
 if (!stick.open()) {
-  // throw new Error('Stick not found!');
+  console.log('ant:no stick');
 }
 
 module.exports = {

@@ -3,6 +3,7 @@ import '@babel/polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+import Socket from './socket';
 import Header from './header';
 import Dashboard from './dashboard/layout';
 import Engine from './game/engine';
@@ -17,78 +18,42 @@ window.React = React;
 class Index extends React.Component {
   constructor() {
     super();
-    this.state = {
-      user: { userid: null, cardid: null, name: '' },
+    const socket = new Socket();
+    this.updatedListener = user => this.setState({ user });
+    this.scannedListener = (scannedUser) => {
+      const { user } = this.state;
+      if (scannedUser.userid === user.userid) {
+        this.setState({ isStarted: true });
+      } else {
+        this.setState({ user: scannedUser });
+      }
     };
-    this.listeners = [];
-    this.socket = new WebSocket('ws://localhost:8080');
-    this.socket.onmessage = (...args) => this.socketData(...args);
+    socket.on('user:updated', this.updatedListener);
+    socket.on('user:scanned', this.scannedListener);
+    this.state = { user: {}, socket };
   }
 
-  registerListener(fn) {
-    this.listeners.push(fn);
-  }
-
-  removeListener(fn) {
-    const idx = this.listeners.indexOf(fn);
-    this.listeners.splice(idx, 1);
-  }
-
-  socketData(evt) {
-    const result = JSON.parse(evt.data);
-    // console.log(data);
-    this.listeners.forEach(l => l(result));
-    if (result.type === 'nfc') {
-      this.setState({ user: result.data });
-    }
-  }
-
-  done(user) {
-    this.socket.send(JSON.stringify({
-      type: 'set-user',
-      data: user,
-    }));
-    this.setState({ user });
-  }
-
-  gameStarted() {
-    this.socket.send(JSON.stringify({
-      type: 'started',
-      data: {},
-    }));
-  }
-
-  gameEnded(score) {
-    this.socket.send(JSON.stringify({
-      type: 'ended',
-      data: { score },
-    }));
+  componentWillUnmount() {
+    const { socket } = this.state;
+    socket.off('user:updated', this.updatedListener);
+    socket.off('user:scanned', this.scannedListener);
   }
 
   render() {
-    const { user } = this.state;
+    const { user, socket, isStarted } = this.state;
     let view;
-    if (!user.userid || !user.name) {
+    if (!isStarted) {
       view = (
-        <Dashboard user={user} onDone={(...args) => this.done(...args)} />
+        <Dashboard user={user} socket={socket} />
       );
     } else {
       view = (
-        <Engine
-          user={user}
-          onStarted={() => this.gameStarted()}
-          onEnded={(...args) => this.gameEnded(...args)}
-          registerListener={fn => this.registerListener(fn)}
-        />
+        <Engine user={user} socket={socket} />
       );
     }
-    // todo: fix this.setState({ user: { userid: null, name: null } })
-    // need to tear down the game engine instance somehow
-    /* eslint no-restricted-globals:0 */
-    //
     return (
       <div className="index">
-        <Header showBack={!!user} onClose={() => location.reload()} />
+        <Header user={user} />
         {view}
       </div>
     );

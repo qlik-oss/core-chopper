@@ -5,30 +5,32 @@ import logo from './resources/qlik-core.svg';
 import './header.css';
 
 export default class Header extends React.Component {
-  constructor(props) {
+  constructor({ user }) {
     super();
-    this.onClose = props.onClose;
-    this.state = { showBack: false };
+    this.state = { user };
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ showBack: nextProps.showBack });
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
   }
 
+  // todo: fix this.setState({ user: { userid: null, name: null } })
+  // need to tear down the game engine instance somehow
+  /* eslint no-restricted-globals:0 */
   render() {
-    const { showBack } = this.state;
-    const back = showBack ? (
+    const { user } = this.state;
+    const right = (
       <div className="right">
-        <span onClick={() => this.onClose()}>Back to main screen</span>
+        {user.userid ? <span onClick={() => location.reload()}>Sign out</span> : ''}
       </div>
-    ) : '';
+    );
     return (
       <section className="header">
         <div className="left">
           <img alt="Qlik Core logo" src={logo} />
           <span>/ Chopper</span>
         </div>
-        {back}
+        {right}
       </section>
     );
   }

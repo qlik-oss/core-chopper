@@ -1,34 +1,31 @@
 import React from 'react';
 
-import Scan from './scan';
 import HighScore from './high-score';
+import Scan from './scan';
 import PowerChart from './power-chart';
 import CaloryChart from './calory-chart';
 
 import './layout.css';
 
 export default class Dashboard extends React.Component {
-  constructor(props) {
+  constructor({ user, socket }) {
     super();
-    this.state = { user: props.user };
-    this.done = props.onDone;
+    this.state = { user, socket };
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({ user: nextProps.user });
+  componentWillReceiveProps({ user }) {
+    this.setState({ user });
   }
 
   render() {
-    const { user } = this.state;
+    const { user, socket } = this.state;
     return (
       <div className="dashboard">
-        <div className="top">
-          <Scan user={user} onDone={u => this.done(u)} />
-          <HighScore />
-          <HighScore distinct />
-        </div>
-        <CaloryChart />
-        <PowerChart />
+        <HighScore user={user} />
+        <Scan user={user} socket={socket} />
+        <HighScore user={user} distinct />
+        <CaloryChart user={user} />
+        <PowerChart user={user} />
       </div>
     );
   }
