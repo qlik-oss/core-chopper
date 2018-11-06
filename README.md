@@ -4,7 +4,7 @@ A Qlik Core gamification using bicycle sensors.
 
 ## Prerequisites
 
-**This repository currently requires physical/hardware sensors:**
+**This repository currently requires physical/hardware sensors to properly test it:**
 
 * ANT+ USB stick to receive ANT+ events
 * ANT+ sensors attached to e.g. a bike
@@ -36,7 +36,6 @@ Open http://localhost:1234.
 
 ### Features
 
-* Add interactions to high score/power chart
 * Add "Next position: 1230 (9th place, user)" in UI
 * Add graphics for e.g. "velocity text" [*********--]
 * Implement multiple modes
@@ -46,7 +45,6 @@ Open http://localhost:1234.
 ### Fixes
 
 * Fix backend sync when using manual sign in (currently no events are saved I think)
-* Make server stateless (currently uses global variables to keep track of users)
 * Refactor game implementation
   * Fix physics/animations, make them less jaggy
   * Fix sprites for floor and clouds
