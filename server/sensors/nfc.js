@@ -1,7 +1,10 @@
 const { NFC } = require('nfc-pcsc');
 
 const listeners = [];
+
+console.log('reader:starting');
 const nfc = new NFC();
+console.log('reader:started');
 
 nfc.on('reader', (reader) => {
   console.log('reader:attached');
