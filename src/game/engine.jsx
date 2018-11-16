@@ -5,6 +5,7 @@ import useModel from '../hooks/model';
 import useLayout from '../hooks/layout';
 import Chopper from './chopper';
 import Cloud from './cloud';
+import FlyingObject from './flying-object';
 import Floor from './floor';
 import Resources from './resources';
 import Settings from './settings';
@@ -94,10 +95,14 @@ export default function ({ player, socket }) {
           data: {
             gameid: gameid.current,
             score: hud.maxScore,
+            bonus: chopper.kills,
           },
         });
       };
       chopperRef.current = chopper;
+      for (let i = 0; i < Settings.OBJECTS_OVER_CHOPPER; i += 1) {
+        engine.add(new FlyingObject(engine, chopper));
+      }
       engine.add(chopper);
       engine.add(countDown);
       engine.add(gameOver);
@@ -106,6 +111,10 @@ export default function ({ player, socket }) {
       engine.add(new Cloud(700, 700 * Settings.scale.y));
       for (let i = 0; i < engine.drawWidth; i += 61 * Settings.scale.y) {
         engine.add(new Floor(i, 0));
+      }
+
+      for (let i = 0; i < Settings.OBJECTS_UNDER_CHOPPER; i += 1) {
+        engine.add(new FlyingObject(engine, chopper));
       }
       engine.add(hud);
       engine.input.pointers.primary.on('down', () => {

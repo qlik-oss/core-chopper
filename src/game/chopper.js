@@ -6,12 +6,14 @@ import Resources from './resources';
 export default ex.Actor.extend({
   constructor(engine) {
     const centerX = engine.drawWidth / 2;
+    this.kills = 0;
     // const centerY = engine.drawHeight / 2;
     ex.Actor.apply(this, [
       centerX,
       -150, // -centerY * Settings.scale.y,
-      Settings.CHOPPER_WIDTH,
-      Settings.CHOPPER_HEIGHT,
+      Settings.CHOPPER_WIDTH * Settings.scale.x + 200,
+      Settings.CHOPPER_HEIGHT * Settings.scale.y,
+      ex.Color.Red,
     ]);
     this.vel = new ex.Vector(0, 0);
     this.anchor = new ex.Vector(0.5, 0.6);
@@ -19,7 +21,8 @@ export default ex.Actor.extend({
       Settings.scale.x * Settings.CHOPPER_SCALE,
       Settings.scale.y * Settings.CHOPPER_SCALE,
     );
-    this.collisionType = ex.CollisionType.Passive;
+    this.collisionType = ex.CollisionType.Fixed;
+
     this.hasBounced = false;
     this.powerModifier = 1;
     this.locked = true;
@@ -34,9 +37,16 @@ export default ex.Actor.extend({
     this.addDrawing('up', this.upAnimation);
     this.addDrawing('down', this.downAnimation);
 
+    this.on('collisionstart', (event) => {
+      if (event.other) {
+        this.kills += 1;
+        event.other.crash();
+      }
+    });
+
     // TODO: fix glitchy collision
     this.on('precollision', () => {
-      if (this.dead) {
+      if (this.dead || this.y < -50) {
         return;
       }
       this.dead = true;
